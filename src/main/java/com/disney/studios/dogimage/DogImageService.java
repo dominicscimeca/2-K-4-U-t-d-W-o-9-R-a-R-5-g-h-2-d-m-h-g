@@ -1,6 +1,5 @@
 package com.disney.studios.dogimage;
 
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -11,12 +10,12 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class DogImageService {
-	private final CrudRepository<DogImage, Integer> dogImageRepository;
-	private final CrudRepository<DogBreed, String> dogBreedRepository;
+	private final DogImageRepository dogImageRepository;
+	private final DogBreedRepository dogBreedRepository;
 
 	public DogImageService(
-			CrudRepository<DogImage, Integer> dogImageRepository,
-			CrudRepository<DogBreed, String> dogBreedRepository
+			DogImageRepository dogImageRepository,
+			DogBreedRepository dogBreedRepository
 	) {
 		this.dogImageRepository = dogImageRepository;
 		this.dogBreedRepository = dogBreedRepository;
@@ -36,10 +35,18 @@ public class DogImageService {
 	public Map<String, List<URL>> getAllDogImagesByBreed() {
 		Iterable<DogImage> dogImages = this.dogImageRepository.findAll();
 
-		return StreamSupport.stream(dogImages.spliterator(), false)
+		return StreamSupport.stream(dogImages.spliterator(), true)
 				.collect(Collectors.groupingBy(
 						dogImage -> dogImage.getBreed().getName(),
 						Collectors.mapping(DogImage::getUrl, Collectors.toList())
 				));
+	}
+
+	public List<URL> getDogImagesByBreed(DogBreed breed) {
+		Iterable<DogImage> dogImages = this.dogImageRepository.findAllByBreed(breed);
+
+		return StreamSupport.stream(dogImages.spliterator(), true)
+				.map(DogImage::getUrl)
+				.collect(Collectors.toList());
 	}
 }
