@@ -1,5 +1,6 @@
 package com.disney.studios;
 
+import com.disney.studios.dogimage.DogImageService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -34,6 +36,9 @@ public class PetLoader implements InitializingBean {
 
     @Autowired
     DataSource dataSource;
+
+    @Autowired
+    DogImageService dogImageService;
 
     /**
      * Load the different breeds into the data source after
@@ -61,7 +66,9 @@ public class PetLoader implements InitializingBean {
         try ( BufferedReader br = new BufferedReader(new InputStreamReader(source.getInputStream()))) {
             String line;
             while ((line = br.readLine()) != null) {
+                URL url = new URL(line);
                 LOGGER.debug(line);
+                dogImageService.save(url, breed);
                 // TODO: Create appropriate objects and save them to the datasource.
             }
         }

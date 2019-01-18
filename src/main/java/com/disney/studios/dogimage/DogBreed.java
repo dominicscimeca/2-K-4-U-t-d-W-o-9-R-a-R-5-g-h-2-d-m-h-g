@@ -1,20 +1,21 @@
 package com.disney.studios.dogimage;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.net.URL;
 
 @Entity
-public class DogImageDao {
+public class DogBreed {
 	@Id
-	@GeneratedValue
-	private Integer id;
+	private String name;
 
-	private final URL url;
+	DogBreed(){}
 
-	DogImageDao(URL url) {
-		this.url = url;
+	public DogBreed(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -26,8 +27,8 @@ public class DogImageDao {
 			return false;
 		}
 
-		DogImageDao dogImageDao = (DogImageDao) obj;
+		DogBreed dogbreed = (DogBreed) obj;
 
-		return dogImageDao.url.equals(this.url);
+		return dogbreed.name.equals(this.name);
 	}
 }
