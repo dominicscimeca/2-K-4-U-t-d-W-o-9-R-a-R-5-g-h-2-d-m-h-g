@@ -27,13 +27,13 @@ public class DogImageServiceTest {
 		DogImage expectDog = new DogImage(url, dogBreed);
 		CrudRepository<DogImage, Integer> fakeDogImageRepository = mock(CrudRepository.class);
 		CrudRepository<DogBreed, String> fakeDogBreedRepository = mock(CrudRepository.class);
+		when(fakeDogBreedRepository.save(dogBreed)).thenReturn(dogBreed);
 		DogImageService dogImageService = new DogImageService(fakeDogImageRepository, fakeDogBreedRepository);
 
 		//when
 		dogImageService.save(url, dogBreed.getName());
 
 		//then
-		verify(fakeDogImageRepository, times(1)).save(expectDog);
 		verify(fakeDogImageRepository, times(1)).save(expectDog);
 	}
 
@@ -64,5 +64,10 @@ public class DogImageServiceTest {
 
 		//then
 		assertThat(returnedDogImages).isEqualTo(expectedDogImages);
+	}
+
+	@Test
+	public void shouldGetDogsOfAParticularBreed() throws MalformedURLException {
+
 	}
 }

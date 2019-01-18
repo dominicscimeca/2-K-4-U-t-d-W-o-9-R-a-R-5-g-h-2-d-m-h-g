@@ -5,10 +5,9 @@
 1. [x] Read through challenge carefully (in general)
 1. [x] Determine Architectural Approach (in general)
 1. [x] Init Spring Boot
-1. [ ] Dog Entity
-1. [ ] Breed Entity
-1. [ ] Static Dog Service
-1. [ ] Get All Dogs Endpoint
+1. [x] Dog Entity
+1. [x] Breed Entity
+1. [x] Get All Dogs Endpoint
 1. [ ] Documentation
 1. [ ] Error Handling
 1. [ ] Authentication
