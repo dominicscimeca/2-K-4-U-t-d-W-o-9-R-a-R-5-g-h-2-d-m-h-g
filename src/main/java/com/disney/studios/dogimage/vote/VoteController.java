@@ -23,6 +23,7 @@ public class VoteController {
 		this.voteService.voteUp(new URL(url), user);
 	}
 
+	@RequestMapping(path = "/dogs/{url}/vote/down", method = RequestMethod.POST)
 	public void voteDown(String url) throws MalformedURLException {
 		User user = this.userService.getUser();
 		this.voteService.voteDown(new URL(url), user);
