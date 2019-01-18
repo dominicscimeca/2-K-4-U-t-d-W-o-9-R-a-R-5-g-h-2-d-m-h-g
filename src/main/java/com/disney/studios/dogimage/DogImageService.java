@@ -49,4 +49,8 @@ public class DogImageService {
 				.map(DogImage::getUrl)
 				.collect(Collectors.toList());
 	}
+
+	public DogImage getDogImageByURL(URL url) {
+		return null;
+	}
 }

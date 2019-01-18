@@ -21,12 +21,12 @@ Design and create a RESTful API that could be used to manage a list of dog image
 
 The operations we expect to see would be:
 
-1. [ ] List all of the available dog pictures grouped by breed
+1. [x] List all of the available dog pictures grouped by breed
 - get all dogs endpoint
 - dog entity has a breed field
 - breed entity
 - dog picture entity with dog and url field
-1. [ ] List all of the available dog pictures of a particular breed
+1. [x] List all of the available dog pictures of a particular breed
 - get dogs by breed endpoint
 1. [ ] Vote up and down a dog picture
 - voteup dog endpoint

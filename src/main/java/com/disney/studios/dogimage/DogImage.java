@@ -19,7 +19,7 @@ public class DogImage {
 
 	DogImage(){}
 
-	DogImage(URL url, DogBreed breed) {
+	public DogImage(URL url, DogBreed breed) {
 		this.url = url;
 		this.breed = breed;
 	}
