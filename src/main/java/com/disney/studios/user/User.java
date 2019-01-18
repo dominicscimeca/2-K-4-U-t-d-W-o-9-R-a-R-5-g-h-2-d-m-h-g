@@ -1,9 +1,17 @@
 package com.disney.studios.user;
 
-public class User {
-	private final String email;
+import lombok.RequiredArgsConstructor;
 
-	public User(String email) {
-		this.email = email;
-	}
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+@RequiredArgsConstructor
+public class User {
+	@Id
+	@GeneratedValue
+	private Integer id;
+
+	private final String email;
 }

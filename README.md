@@ -28,7 +28,7 @@ The operations we expect to see would be:
 - dog picture entity with dog and url field
 1. [x] List all of the available dog pictures of a particular breed
 - get dogs by breed endpoint
-1. [ ] Vote up and down a dog picture
+1. [x] Vote up and down a dog picture
 - voteup dog endpoint
 - votedown dog endpoint
 - vote entity
@@ -36,11 +36,11 @@ The operations we expect to see would be:
 
 The information the Dog Breed App needs to function is:
 
-1. [ ] A URL to a dog picture
+1. [x] A URL to a dog picture
 - validate correct url
 1. [ ] The number of votes a picture has received
 - summation of votes
-1. [ ] The dog's breed
+1. [x] The dog's breed
 - Breed, name, id
 1. [ ] Any other information required to identify a specific dog
 
