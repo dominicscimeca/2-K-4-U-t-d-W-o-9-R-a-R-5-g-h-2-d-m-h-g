@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 public class VoteServiceTest {
 	private VoteService voteService;
 	private VoteRepository fakeVoteRepository;
-	private UserService fakeUserService;
 	private DogImageService fakeDogImageService;
 	private URL url;
 	private DogImage dog;
@@ -28,15 +27,13 @@ public class VoteServiceTest {
 	@Before
 	public void setUp() throws MalformedURLException {
 		this.fakeVoteRepository = mock(VoteRepository.class);
-		this.fakeUserService = mock(UserService.class);
 		this.fakeDogImageService = mock(DogImageService.class);
-		this.voteService = new VoteService(fakeVoteRepository, fakeDogImageService, fakeUserService);
+		this.voteService = new VoteService(fakeVoteRepository, fakeDogImageService);
 
 		this.url = new URL("http://google.com");
 		this.dog = new DogImage(url, new DogBreed("Breed 1"));
 		this.user = new User("email@email.com");
 
-		when(this.fakeUserService.getUser()).thenReturn(this.user);
 		when(this.fakeDogImageService.getDogImageByURL(url)).thenReturn(this.dog);
 	}
 
@@ -46,7 +43,7 @@ public class VoteServiceTest {
 		Vote expectedVote = new Vote(dog, Vote.UP, user);
 
 		//when
-		voteService.voteUp(url);
+		voteService.voteUp(url, user);
 
 		//then
 		verify(fakeVoteRepository, times(1)).save(expectedVote);
@@ -58,7 +55,7 @@ public class VoteServiceTest {
 		Vote expectedVote = new Vote(dog, Vote.DOWN, user);
 
 		//when
-		voteService.voteDown(url);
+		voteService.voteDown(url, user);
 
 		//then
 		verify(fakeVoteRepository, times(1)).save(expectedVote);
