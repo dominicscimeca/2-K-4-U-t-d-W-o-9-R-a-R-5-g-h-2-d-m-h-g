@@ -31,9 +31,29 @@ public class DogImageControllerTest {
 		DogImageController dogImageController = new DogImageController(fakeDogImageService);
 
 		//when
-		Map<String, List<URL>> returnedMap = dogImageController.getDogImagesByBreed();
+		Map<String, List<URL>> returnedMap = dogImageController.getDogImagesGroupedByBreed();
 
 		//then
 		assertThat(returnedMap).isEqualTo(expectedMap);
+	}
+
+	@Test
+	public void shouldAskDogImageServiceForParticularBreed() throws MalformedURLException {
+		//given
+		DogImageService fakeDogImageService = mock(DogImageService.class);
+		String breed = "Breed 1";
+		String url1 = "http://yahoo.com";
+		String url2 = "http://google.com";
+		List<URL> expectedImages = Arrays.asList(new URL(url1), new URL(url2));
+
+
+		when(fakeDogImageService.getDogImagesByBreed(breed)).thenReturn(expectedImages);
+		DogImageController dogImageController = new DogImageController(fakeDogImageService);
+
+		//when
+		List<URL> returnedImages = dogImageController.getDogImages(breed);
+
+		//then
+		assertThat(returnedImages).isEqualTo(expectedImages);
 	}
 }

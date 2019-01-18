@@ -42,8 +42,8 @@ public class DogImageService {
 				));
 	}
 
-	public List<URL> getDogImagesByBreed(DogBreed breed) {
-		Iterable<DogImage> dogImages = this.dogImageRepository.findAllByBreed(breed);
+	public List<URL> getDogImagesByBreed(String breed) {
+		Iterable<DogImage> dogImages = this.dogImageRepository.findAllByBreed(new DogBreed(breed));
 
 		return StreamSupport.stream(dogImages.spliterator(), true)
 				.map(DogImage::getUrl)

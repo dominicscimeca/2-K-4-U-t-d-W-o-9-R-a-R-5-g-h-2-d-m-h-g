@@ -2,6 +2,7 @@ package com.disney.studios.dogimage;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URL;
@@ -16,8 +17,13 @@ public class DogImageController {
 		this.dogImageService = dogImageService;
 	}
 
-	@RequestMapping(path = "/dogImages", method = RequestMethod.GET)
-	public Map<String, List<URL>> getDogImagesByBreed() {
+	@RequestMapping(path = "/dogsByBreed", method = RequestMethod.GET)
+	public Map<String, List<URL>> getDogImagesGroupedByBreed() {
 		return this.dogImageService.getAllDogImagesByBreed();
+	}
+
+	@RequestMapping(path = "/dogs", method = RequestMethod.GET)
+	public List<URL> getDogImages(@RequestParam(value = "breed") String breed) {
+		return this.dogImageService.getDogImagesByBreed(breed);
 	}
 }

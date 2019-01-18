@@ -79,7 +79,7 @@ public class DogImageServiceTest {
 		when(fakeDogImageRepository.findAllByBreed(dogImages.get(0).getBreed())).thenReturn(dogImages);
 
 		//when
-		List<URL> returnedDogImages = dogImageService.getDogImagesByBreed(dogImages.get(0).getBreed());
+		List<URL> returnedDogImages = dogImageService.getDogImagesByBreed(dogImages.get(0).getBreed().getName());
 
 		//then
 		assertThat(returnedDogImages).isEqualTo(expectedDogImages);
