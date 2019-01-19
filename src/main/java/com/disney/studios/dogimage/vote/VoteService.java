@@ -4,6 +4,7 @@ import com.disney.studios.dogimage.DogImageDTO;
 import com.disney.studios.dogimage.DogImageService;
 import com.disney.studios.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -11,8 +12,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class VoteService {
-	private final VoteRepository voteRepository;
-	private final DogImageService dogImageService;
+	@Autowired private final VoteRepository voteRepository;
+	@Autowired private final DogImageService dogImageService;
 
 	public Vote voteUp(Integer imageId, User user) {
 		return this.vote(imageId, Vote.UP, user);

@@ -16,7 +16,7 @@ public class DogImageController {
 		this.dogImageService = dogImageService;
 	}
 
-	@RequestMapping(path = "/dogsByBreed", method = RequestMethod.GET)
+	@RequestMapping(path = "/breed/dogs", method = RequestMethod.GET)
 	public Map<String, Set<DogImageDTO>> getDogImagesGroupedByBreed() {
 		return this.dogImageService.getAllDogImagesByBreed();
 	}

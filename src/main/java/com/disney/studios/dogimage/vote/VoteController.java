@@ -2,19 +2,15 @@ package com.disney.studios.dogimage.vote;
 
 import com.disney.studios.user.User;
 import com.disney.studios.user.UserService;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequiredArgsConstructor
 public class VoteController {
-	private final UserService userService;
-	private final VoteService voteService;
-
-	public VoteController(VoteService voteService, UserService userService) {
-		this.voteService = voteService;
-		this.userService = userService;
-	}
+	@Autowired private final VoteService voteService;
+	@Autowired private final UserService userService;
 
 	@RequestMapping(path = "/dogs/{imageId}/vote/up", method = RequestMethod.POST)
 	public void voteUp(@RequestHeader(value="Authorization") String authorizationHeader, @PathVariable Integer imageId) {

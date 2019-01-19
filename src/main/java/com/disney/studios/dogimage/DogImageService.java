@@ -1,6 +1,7 @@
 package com.disney.studios.dogimage;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -14,7 +15,7 @@ import java.util.stream.StreamSupport;
 @Service
 @AllArgsConstructor
 public class DogImageService {
-	private final DogImageRepository dogImageRepository;
+	@Autowired private final DogImageRepository dogImageRepository;
 
 	public void save(URL url, String breed) {
 		this.dogImageRepository.save(new DogImage(url, breed));
