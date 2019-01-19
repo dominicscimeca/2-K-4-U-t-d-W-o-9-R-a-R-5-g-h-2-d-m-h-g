@@ -1,6 +1,6 @@
 package com.disney.studios.user;
 
-import com.disney.studios.dogimage.vote.NotAuthorizedException;
+import com.disney.studios.dogimage.vote.UnauthorizedException;
 import com.disney.studios.dogimage.vote.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +8,12 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
@@ -105,7 +104,7 @@ public class UserServiceTest {
 		assertThat(user).isEqualTo(this.user);
 	}
 
-	@Test(expected = NotAuthorizedException.class)
+	@Test(expected = UnauthorizedException.class)
 	public void shouldUseVoteServiceToVoteUpNotAuthorized() throws MalformedURLException {
 		//given
 		when(this.fakeJWTProvider.isValid(any())).thenReturn(false);

@@ -64,7 +64,7 @@ public class VoteServiceTest {
 		verify(fakeVoteRepository, times(1)).save(expectedVote);
 	}
 
-	@Test(expected = ExistingVoteException.class)
+	@Test(expected = VoteDeniedException.class)
 	public void shouldSaveVoteForVoteUpExistingVoteFromUser() {
 		//given
 		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
@@ -75,7 +75,7 @@ public class VoteServiceTest {
 		voteService.voteUp(id, user);
 	}
 
-	@Test(expected = ExistingVoteException.class)
+	@Test(expected = VoteDeniedException.class)
 	public void shouldSaveVoteForVoteDownExistingVoteFromUser() {
 		//given
 		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());

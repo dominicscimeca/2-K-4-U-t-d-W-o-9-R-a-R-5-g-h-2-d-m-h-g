@@ -12,6 +12,8 @@
 1. [ ] Error Handling
 1. [ ] Authentication
 1. [ ] Logging 
+1. [ ] GMT
+1. [ ] 
 
 # API Challenge
 

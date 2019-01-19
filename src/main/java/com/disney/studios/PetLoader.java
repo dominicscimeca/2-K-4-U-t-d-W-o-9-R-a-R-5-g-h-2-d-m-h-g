@@ -69,7 +69,6 @@ public class PetLoader implements InitializingBean {
                 URL url = new URL(line);
                 LOGGER.debug(line);
                 dogImageService.save(url, breed);
-                // TODO: Create appropriate objects and save them to the datasource.
             }
         }
     }

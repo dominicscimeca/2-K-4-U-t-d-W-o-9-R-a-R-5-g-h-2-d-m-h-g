@@ -29,14 +29,14 @@ public class VoteService {
 		if(dog.isPresent()){
 			Optional<Vote> existingVote = this.voteRepository.findByDogAndUser(imageId, user.getId());
 			if(existingVote.isPresent()){
-				throw new ExistingVoteException();
+				throw new VoteDeniedException(String.format("Vote Denied. You can only vote once on any particular dog image. imageID='%s'", imageId));
 			}
 
 			Vote vote = new Vote(imageId, voteUpdate, user.getId());
 
 			return this.voteRepository.save(vote);
 		}else{
-			throw new DogImageNotFoundException();
+			throw new DogImageNotFoundException(String.format("Dog Image Not Found. Vote Invalid. imageID='%s'", imageId));
 		}
 	}
 }

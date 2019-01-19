@@ -5,69 +5,76 @@ import com.disney.studios.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@WebMvcTest(VoteController.class)
 public class VoteControllerTest {
-	private VoteService fakeVoteService;
+
+	@Autowired
+	private MockMvc mockMvc;
+
+	@MockBean
+	private VoteService voteService;
+
+	@MockBean
 	private UserService userService;
-	private VoteController voteController;
-	private User user;
+	private String notValidToken;
+	private String validToken;
 	private String email;
+	private User user;
 
 	@Before
 	public void setUp(){
-		this.fakeVoteService = mock(VoteService.class);
-		this.userService = mock(UserService.class);
-		this.voteController = new VoteController(this.fakeVoteService, this.userService);
-		this.email = "email@email.com";
-		this.user = new User(email);
+		this.notValidToken = "not-valid-token";
+		this.validToken = "valid-token";
+		this.email = "me@me.com";
+		this.user = new User(this.email);
+
+		when(this.userService.getUserFromToken(notValidToken)).thenThrow(UnauthorizedException.class);
+		when(this.userService.getUserFromToken(validToken)).thenReturn(this.user);
 	}
 
 	@Test
-	public void shouldUseVoteServiceToVoteUp() {
-		//given
-		Integer id = 5;
-		String token = "valid-token";
-		String authorizationHeader = "Bearer " + token;
-		when(userService.getUserFromToken(token)).thenReturn(this.user);
-
-		//when
-		this.voteController.voteUp(authorizationHeader, id);
-
+	public void shouldHaveCorrectResponseForBadToken() throws Exception {
 		//then
-		verify(fakeVoteService, times(1)).voteUp(id, this.user);
+		this.mockMvc.perform(
+				post("/dogs/1/vote/down")
+						.header("Authorization","Bearer "+ this.notValidToken)
+		)
+				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
-	public void shouldUseVoteServiceToVoteDown() {
-		//given
-		Integer id = 5;
-		String token = "valid-token";
-		String authorizationHeader = "Bearer " + token;
-		when(userService.getUserFromToken(token)).thenReturn(user);
-
-		//when
-		this.voteController.voteDown(authorizationHeader, id);
+	public void shouldVoteUpCorrectly() throws Exception {
+		this.mockMvc.perform(
+				post("/dogs/1/vote/up")
+						.header("Authorization","Bearer "+ this.validToken)
+		)
+				.andExpect(status().isOk());
 
 		//then
-		verify(fakeVoteService, times(1)).voteDown(id, this.user);
+		verify(voteService, times(1)).voteUp(1, this.user);
 	}
 
 	@Test
-	public void handlesUserNotFound() {
-		//given
-		Integer id = 5;
-		String token = "valid-token";
-		String authorizationHeader = "Bearer " + token;
-		when(userService.getUserFromToken(token)).thenThrow(UserNotFoundException.class);
-
-		//when
-		this.voteController.voteDown(authorizationHeader, id);
+	public void shouldVoteDownCorrectly() throws Exception {
+		this.mockMvc.perform(
+				post("/dogs/2/vote/down")
+						.header("Authorization","Bearer "+ this.validToken)
+		)
+				.andExpect(status().isOk());
 
 		//then
-		verify(fakeVoteService, times(1)).voteDown(id, this.user);
+		verify(voteService, times(1)).voteDown(2, this.user);
 	}
 }
+

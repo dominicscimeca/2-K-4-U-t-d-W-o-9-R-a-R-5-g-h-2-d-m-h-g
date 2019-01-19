@@ -59,15 +59,19 @@ public class DogImageRepositoryTest {
 		URL url2 = new URL("http://google2.com");
 		DogImage dalmationDogImage = this.dogImageRepository.save(new DogImage(url, breed));
 		DogImage dalmationDogImage2 = this.dogImageRepository.save(new DogImage(url2, breed));
+		DogImage dalmationDogImage3 = this.dogImageRepository.save(new DogImage(url2, breed));
 		this.dogImageRepository.save(new DogImage(url, "German"));
 
 		this.voteRepository.save(new Vote(dalmationDogImage.getId(), Vote.DOWN, userId));
 		this.voteRepository.save(new Vote(dalmationDogImage.getId(), Vote.DOWN, userId));
+		this.voteRepository.save(new Vote(dalmationDogImage.getId(), Vote.DOWN, userId));
 		this.voteRepository.save(new Vote(dalmationDogImage.getId(), Vote.UP, userId));
+		this.voteRepository.save(new Vote(dalmationDogImage3.getId(), Vote.UP, userId));
 		this.voteRepository.save(new Vote(100, Vote.DOWN, userId));
 
-		DogImageDTO expectedDalmationDogImageDTO = new DogImageDTO(dalmationDogImage, -1L);
-		DogImageDTO expectedDalmationDogImageDTO2 = new DogImageDTO(dalmationDogImage2, null);
+		DogImageDTO expectedDalmationDogImageDTO = buildDogImageDTO(dalmationDogImage, -2L);
+		DogImageDTO expectedDalmationDogImageDTO2 = buildDogImageDTO(dalmationDogImage2, 0L);
+		DogImageDTO expectedDalmationDogImageDTO3 = buildDogImageDTO(dalmationDogImage3, 1L);
 
 		//when
 		Iterable<DogImageDTO> response = this.dogImageRepository.findAllDTOByBreed(breed);
@@ -79,9 +83,19 @@ public class DogImageRepositoryTest {
 		//then
 		Iterator<DogImageDTO> responseIterator = response.iterator();
 
+		assertThat(responseIterator.next().getVoteCount()).isEqualTo(expectedDalmationDogImageDTO3.getVoteCount());
 		assertThat(responseIterator.next().getVoteCount()).isEqualTo(expectedDalmationDogImageDTO2.getVoteCount());
 		assertThat(responseIterator.next().getVoteCount()).isEqualTo(expectedDalmationDogImageDTO.getVoteCount());
 		assertThat(responseIterator.hasNext()).isEqualTo(false);
+	}
+
+	private DogImageDTO buildDogImageDTO(DogImage dogImage, Long voteCount){
+		return new DogImageDTO(
+			dogImage.getId(),
+			dogImage.getUrl(),
+			dogImage.getBreed(),
+			voteCount
+		);
 	}
 
 

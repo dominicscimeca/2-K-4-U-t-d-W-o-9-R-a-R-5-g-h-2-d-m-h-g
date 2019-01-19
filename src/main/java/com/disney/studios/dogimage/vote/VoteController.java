@@ -29,6 +29,17 @@ public class VoteController {
 	}
 
 	private String getTokenFromHeader(String authHeader){
-		return authHeader.split(" ")[1];
+		if(null == authHeader){
+			throw new UnauthorizedException("Authorization Header missing. Correct Format `Authorization: Bearer $token`");
+		}
+		String[] splitHeader = authHeader.split(" ");
+		if(!"bearer".equals(splitHeader[0].toLowerCase())){
+			throw new UnauthorizedException("Authorization Header is not a Bearer token. Correct Format `Authorization: Bearer $token`");
+		}
+		if(2 != splitHeader.length){
+			throw new UnauthorizedException("Authorization Header has the incorrect format. Correct Format `Authorization: Bearer $token`");
+		}
+
+		return splitHeader[1];
 	}
 }
