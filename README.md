@@ -32,17 +32,17 @@ The operations we expect to see would be:
 - voteup dog endpoint
 - votedown dog endpoint
 - vote entity
-1. [ ] The details associated with a dog picture
+1. [x] The details associated with a dog picture
 
 The information the Dog Breed App needs to function is:
 
 1. [x] A URL to a dog picture
 - validate correct url
-1. [ ] The number of votes a picture has received
+1. [x] The number of votes a picture has received
 - summation of votes
 1. [x] The dog's breed
 - Breed, name, id
-1. [ ] Any other information required to identify a specific dog
+1. [x] Any other information required to identify a specific dog
 
 The Dog Breed App expects the response to be sorted by the number of votes a picture has received.
 

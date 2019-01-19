@@ -1,14 +1,11 @@
 package com.disney.studios.dogimage.vote;
 
-import com.disney.studios.user.JWTProvider;
 import com.disney.studios.user.User;
 import com.disney.studios.user.UserService;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class VoteController {
 	private final UserService userService;
@@ -19,20 +16,20 @@ public class VoteController {
 		this.userService = userService;
 	}
 
-	@RequestMapping(path = "/dogs/{url}/vote/up", method = RequestMethod.POST)
-	public void voteUp(@RequestHeader(value="Authorization") String authorizationHeader, String url) throws MalformedURLException {
+	@RequestMapping(path = "/dogs/{imageId}/vote/up", method = RequestMethod.POST)
+	public void voteUp(@RequestHeader(value="Authorization") String authorizationHeader, @PathVariable Integer imageId) {
 		String token = getTokenFromHeader(authorizationHeader);
 		User user = this.userService.getUserFromToken(token);
 
-		this.voteService.voteUp(new URL(url), user);
+		this.voteService.voteUp(imageId, user);
 	}
 
-	@RequestMapping(path = "/dogs/{url}/vote/down", method = RequestMethod.POST)
-	public void voteDown(@RequestHeader(value="Authorization") String authorizationHeader, String url) throws MalformedURLException {
+	@RequestMapping(path = "/dogs/{imageId}/vote/down", method = RequestMethod.POST)
+	public void voteDown(@RequestHeader(value="Authorization") String authorizationHeader, @PathVariable Integer imageId) {
 		String token = getTokenFromHeader(authorizationHeader);
 		User user = this.userService.getUserFromToken(token);
 
-		this.voteService.voteDown(new URL(url), user);
+		this.voteService.voteDown(imageId, user);
 	}
 
 	private String getTokenFromHeader(String authHeader){

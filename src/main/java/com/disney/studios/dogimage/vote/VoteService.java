@@ -3,32 +3,34 @@ package com.disney.studios.dogimage.vote;
 import com.disney.studios.dogimage.DogImage;
 import com.disney.studios.dogimage.DogImageService;
 import com.disney.studios.user.User;
-import com.disney.studios.user.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.net.URL;
+import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class VoteService {
 	private final VoteRepository voteRepository;
 	private final DogImageService dogImageService;
 
-	public VoteService(VoteRepository voteRepository, DogImageService dogImageService) {
-		this.dogImageService = dogImageService;
-		this.voteRepository = voteRepository;
+	public Vote voteUp(Integer imageId, User user) {
+		return this.vote(imageId, Vote.UP, user);
 	}
 
-	public void voteUp(URL url, User user) {
-		DogImage dog = this.dogImageService.getDogImageByURL(url);
-
-		Vote vote = new Vote(dog, Vote.UP, user);
-
-		this.voteRepository.save(vote);
+	public Vote voteDown(Integer imageId, User user) {
+		return this.vote(imageId, Vote.DOWN, user);
 	}
 
-	public void voteDown(URL url, User user) {
-		DogImage dog = this.dogImageService.getDogImageByURL(url);
+	private Vote vote(Integer imageId, Integer voteUpdate, User user){
+		Optional<DogImage> dog = this.dogImageService.getDogImage(imageId);
 
-		Vote vote = new Vote(dog, Vote.DOWN, user);
+		if(dog.isPresent()){
+			Vote vote = new Vote(imageId, voteUpdate, user.getId());
 
-		this.voteRepository.save(vote);
+			return this.voteRepository.save(vote);
+		}else{
+			throw new DogImageNotFoundException();
+		}
 	}
 }

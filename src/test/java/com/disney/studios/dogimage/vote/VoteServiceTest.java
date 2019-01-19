@@ -1,10 +1,8 @@
 package com.disney.studios.dogimage.vote;
 
-import com.disney.studios.user.User;
-import com.disney.studios.user.UserService;
-import com.disney.studios.dogimage.DogBreed;
 import com.disney.studios.dogimage.DogImage;
 import com.disney.studios.dogimage.DogImageService;
+import com.disney.studios.user.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -23,6 +22,7 @@ public class VoteServiceTest {
 	private URL url;
 	private DogImage dog;
 	private User user;
+	private Integer id;
 
 	@Before
 	public void setUp() throws MalformedURLException {
@@ -31,19 +31,19 @@ public class VoteServiceTest {
 		this.voteService = new VoteService(fakeVoteRepository, fakeDogImageService);
 
 		this.url = new URL("http://google.com");
-		this.dog = new DogImage(url, new DogBreed("Breed 1"));
+		this.id = 7;
+		this.dog = new DogImage(id, url, "Breed 1");
 		this.user = new User("email@email.com");
-
-		when(this.fakeDogImageService.getDogImageByURL(url)).thenReturn(this.dog);
 	}
 
 	@Test
 	public void shouldSaveVoteForVoteUp() {
 		//given
-		Vote expectedVote = new Vote(dog, Vote.UP, user);
+		Vote expectedVote = new Vote(id, Vote.UP, user.getId());
+		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
 
 		//when
-		voteService.voteUp(url, user);
+		voteService.voteUp(id, user);
 
 		//then
 		verify(fakeVoteRepository, times(1)).save(expectedVote);
@@ -52,12 +52,23 @@ public class VoteServiceTest {
 	@Test
 	public void shouldSaveVoteForVoteDown() {
 		//given
-		Vote expectedVote = new Vote(dog, Vote.DOWN, user);
+		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
+		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
 
 		//when
-		voteService.voteDown(url, user);
+		voteService.voteDown(id, user);
 
 		//then
 		verify(fakeVoteRepository, times(1)).save(expectedVote);
+	}
+
+	@Test(expected = DogImageNotFoundException.class)
+	public void shouldThrowAnErrorIfImageDoesntExistVoteUp() {
+		voteService.voteUp(id, user);
+	}
+
+	@Test(expected = DogImageNotFoundException.class)
+	public void shouldThrowAnErrorIfImageDoesntExistVoteDown() {
+		voteService.voteDown(id, user);
 	}
 }

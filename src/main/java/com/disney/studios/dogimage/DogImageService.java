@@ -5,27 +5,20 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class DogImageService {
 	private final DogImageRepository dogImageRepository;
-	private final DogBreedRepository dogBreedRepository;
 
-	public DogImageService(
-			DogImageRepository dogImageRepository,
-			DogBreedRepository dogBreedRepository
-	) {
+	public DogImageService(DogImageRepository dogImageRepository) {
 		this.dogImageRepository = dogImageRepository;
-		this.dogBreedRepository = dogBreedRepository;
 	}
 
 	public void save(URL url, String breed) {
-		DogBreed dogBreed = new DogBreed(breed);
-		DogBreed returnedDogBreed = this.dogBreedRepository.save(dogBreed);
-
-		this.save(new DogImage(url, returnedDogBreed));
+		this.save(new DogImage(url, breed));
 	}
 
 	protected void save(DogImage dog) {
@@ -37,13 +30,13 @@ public class DogImageService {
 
 		return StreamSupport.stream(dogImages.spliterator(), true)
 				.collect(Collectors.groupingBy(
-						dogImage -> dogImage.getBreed().getName(),
+						DogImage::getBreed,
 						Collectors.mapping(DogImage::getUrl, Collectors.toList())
 				));
 	}
 
 	public List<URL> getDogImagesByBreed(String breed) {
-		Iterable<DogImage> dogImages = this.dogImageRepository.findAllByBreed(new DogBreed(breed));
+		Iterable<DogImage> dogImages = this.dogImageRepository.findAllByBreed(breed);
 
 		return StreamSupport.stream(dogImages.spliterator(), true)
 				.map(DogImage::getUrl)
@@ -52,5 +45,9 @@ public class DogImageService {
 
 	public DogImage getDogImageByURL(URL url) {
 		return null;
+	}
+
+	public Optional<DogImage> getDogImage(Integer imageId) {
+		return this.dogImageRepository.findById(imageId);
 	}
 }

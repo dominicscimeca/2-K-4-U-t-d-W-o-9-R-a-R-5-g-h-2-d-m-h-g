@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.data.repository.CrudRepository;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,14 +19,12 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class DogImageServiceTest {
 	DogImageRepository fakeDogImageRepository;
-	DogBreedRepository fakeDogBreedRepository;
 	DogImageService dogImageService;
 
 	@Before
 	public void setUp(){
 		fakeDogImageRepository = mock(DogImageRepository.class);
-		fakeDogBreedRepository = mock(DogBreedRepository.class);
-		dogImageService = new DogImageService(fakeDogImageRepository, fakeDogBreedRepository);
+		dogImageService = new DogImageService(fakeDogImageRepository);
 	}
 
 
@@ -35,12 +32,11 @@ public class DogImageServiceTest {
 	public void shouldUseRepositoryToSaveDogEntityFromURL() throws MalformedURLException {
 		//given
 		URL url = new URL("http://www.google.com");
-		DogBreed dogBreed = new DogBreed("Breed 1");
+		String dogBreed = "Breed 1";
 		DogImage expectDog = new DogImage(url, dogBreed);
-		when(fakeDogBreedRepository.save(dogBreed)).thenReturn(dogBreed);
 
 		//when
-		dogImageService.save(url, dogBreed.getName());
+		dogImageService.save(url, dogBreed);
 
 		//then
 		verify(fakeDogImageRepository, times(1)).save(expectDog);
@@ -55,10 +51,10 @@ public class DogImageServiceTest {
 		);
 		Map<String, List<URL>> expectedDogImages = ImmutableMap.<String, List<URL>>builder()
 			.put(
-				dogImagesInDatabase.get(0).getBreed().getName(), Collections.singletonList(dogImagesInDatabase.get(0).getUrl())
+				dogImagesInDatabase.get(0).getBreed(), Collections.singletonList(dogImagesInDatabase.get(0).getUrl())
 			)
 			.put(
-				dogImagesInDatabase.get(1).getBreed().getName(), Collections.singletonList(dogImagesInDatabase.get(1).getUrl())
+				dogImagesInDatabase.get(1).getBreed(), Collections.singletonList(dogImagesInDatabase.get(1).getUrl())
 			)
 			.build();
 
@@ -79,13 +75,13 @@ public class DogImageServiceTest {
 		when(fakeDogImageRepository.findAllByBreed(dogImages.get(0).getBreed())).thenReturn(dogImages);
 
 		//when
-		List<URL> returnedDogImages = dogImageService.getDogImagesByBreed(dogImages.get(0).getBreed().getName());
+		List<URL> returnedDogImages = dogImageService.getDogImagesByBreed(dogImages.get(0).getBreed());
 
 		//then
 		assertThat(returnedDogImages).isEqualTo(expectedDogImages);
 	}
 
 	private DogImage getTestDogImage(String url, String breed) throws MalformedURLException {
-		return new DogImage(new URL(url), new DogBreed(breed));
+		return new DogImage(new URL(url), breed);
 	}
 }

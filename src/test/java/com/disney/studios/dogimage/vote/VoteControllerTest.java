@@ -1,15 +1,11 @@
 package com.disney.studios.dogimage.vote;
 
-import com.disney.studios.user.JWTProvider;
 import com.disney.studios.user.User;
 import com.disney.studios.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import static org.mockito.Mockito.*;
 
@@ -31,32 +27,32 @@ public class VoteControllerTest {
 	}
 
 	@Test
-	public void shouldUseVoteServiceToVoteUp() throws MalformedURLException {
+	public void shouldUseVoteServiceToVoteUp() {
 		//given
-		String url = "http://google.com";
+		Integer id = 5;
 		String token = "valid-token";
 		String authorizationHeader = "Bearer " + token;
 		when(userService.getUserFromToken(token)).thenReturn(this.user);
 
 		//when
-		this.voteController.voteUp(authorizationHeader, url);
+		this.voteController.voteUp(authorizationHeader, id);
 
 		//then
-		verify(fakeVoteService, times(1)).voteUp(new URL(url), this.user);
+		verify(fakeVoteService, times(1)).voteUp(id, this.user);
 	}
 
 	@Test
-	public void shouldUseVoteServiceToVoteDown() throws MalformedURLException {
+	public void shouldUseVoteServiceToVoteDown() {
 		//given
-		String url = "http://google.com";
+		Integer id = 5;
 		String token = "valid-token";
 		String authorizationHeader = "Bearer " + token;
 		when(userService.getUserFromToken(token)).thenReturn(user);
 
 		//when
-		this.voteController.voteDown(authorizationHeader, url);
+		this.voteController.voteDown(authorizationHeader, id);
 
 		//then
-		verify(fakeVoteService, times(1)).voteDown(new URL(url), this.user);
+		verify(fakeVoteService, times(1)).voteDown(id, this.user);
 	}
 }
