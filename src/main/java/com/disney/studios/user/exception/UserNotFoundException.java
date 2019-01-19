@@ -1,4 +1,4 @@
-package com.disney.studios.dogimage.vote;
+package com.disney.studios.user.exception;
 
 public class UserNotFoundException extends RuntimeException {
 	public UserNotFoundException(String message){

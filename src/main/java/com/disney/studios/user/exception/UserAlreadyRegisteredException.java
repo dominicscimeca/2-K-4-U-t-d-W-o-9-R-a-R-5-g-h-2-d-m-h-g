@@ -1,4 +1,4 @@
-package com.disney.studios.user;
+package com.disney.studios.user.exception;
 
 public class UserAlreadyRegisteredException extends RuntimeException {
 	public UserAlreadyRegisteredException(String message){

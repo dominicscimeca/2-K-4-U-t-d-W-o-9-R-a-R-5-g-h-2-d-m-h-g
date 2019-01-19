@@ -1,4 +1,4 @@
-package com.disney.studios.user;
+package com.disney.studios.user.exception;
 
 public class InvalidLoginException extends RuntimeException {
 	public InvalidLoginException(String message){

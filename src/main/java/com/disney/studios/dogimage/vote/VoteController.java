@@ -1,5 +1,6 @@
 package com.disney.studios.dogimage.vote;
 
+import com.disney.studios.dogimage.vote.exception.UnauthorizedException;
 import com.disney.studios.user.User;
 import com.disney.studios.user.UserService;
 import lombok.RequiredArgsConstructor;

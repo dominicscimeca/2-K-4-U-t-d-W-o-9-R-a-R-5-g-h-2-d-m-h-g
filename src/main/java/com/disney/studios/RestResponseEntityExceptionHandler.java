@@ -1,13 +1,13 @@
 package com.disney.studios;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.disney.studios.dogimage.vote.DogImageNotFoundException;
-import com.disney.studios.dogimage.vote.UnauthorizedException;
-import com.disney.studios.dogimage.vote.UserNotFoundException;
-import com.disney.studios.dogimage.vote.VoteDeniedException;
-import com.disney.studios.user.InvalidLoginException;
-import com.disney.studios.user.NotAValidEmailException;
-import com.disney.studios.user.UserAlreadyRegisteredException;
+import com.disney.studios.dogimage.vote.exception.DogImageNotFoundException;
+import com.disney.studios.dogimage.vote.exception.UnauthorizedException;
+import com.disney.studios.dogimage.vote.exception.VoteDeniedException;
+import com.disney.studios.user.exception.InvalidLoginException;
+import com.disney.studios.user.exception.NotAValidEmailException;
+import com.disney.studios.user.exception.UserAlreadyRegisteredException;
+import com.disney.studios.user.exception.UserNotFoundException;
 import lombok.Getter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

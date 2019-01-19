@@ -1,7 +1,11 @@
 package com.disney.studios.user;
 
-import com.disney.studios.dogimage.vote.UnauthorizedException;
-import com.disney.studios.dogimage.vote.UserNotFoundException;
+import com.disney.studios.dogimage.vote.exception.UnauthorizedException;
+import com.disney.studios.user.exception.InvalidLoginException;
+import com.disney.studios.user.exception.NotAValidEmailException;
+import com.disney.studios.user.exception.UserAlreadyRegisteredException;
+import com.disney.studios.user.exception.UserNotFoundException;
+import com.disney.studios.user.jwt.JWTProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

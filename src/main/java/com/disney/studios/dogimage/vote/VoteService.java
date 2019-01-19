@@ -2,6 +2,8 @@ package com.disney.studios.dogimage.vote;
 
 import com.disney.studios.dogimage.DogImageDTO;
 import com.disney.studios.dogimage.DogImageService;
+import com.disney.studios.dogimage.vote.exception.DogImageNotFoundException;
+import com.disney.studios.dogimage.vote.exception.VoteDeniedException;
 import com.disney.studios.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

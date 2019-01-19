@@ -1,4 +1,4 @@
-package com.disney.studios.dogimage.vote;
+package com.disney.studios.dogimage.vote.exception;
 
 public class DogImageNotFoundException extends RuntimeException {
 	public DogImageNotFoundException(String message){
