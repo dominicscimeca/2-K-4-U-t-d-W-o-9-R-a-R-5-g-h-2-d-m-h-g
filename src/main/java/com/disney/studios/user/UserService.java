@@ -1,6 +1,7 @@
 package com.disney.studios.user;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.disney.studios.dogimage.vote.NotAuthorizedException;
+import com.disney.studios.dogimage.vote.UserNotFoundException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,7 @@ public class UserService {
 		this.jwtProvider = jwtProvider;
 	}
 
-	public User getUser() {
-		return this.userRepository.findAll().iterator().next();
-	}
-
-	public DecodedJWT register(String email, String password) {
+	public String register(String email, String password) {
 		String passwordHash = createPasswordHash(password);
 		User existingUser = this.userRepository.getUserByEmail(email);
 		if(!isValidEmailAddress(email)){
@@ -55,7 +52,7 @@ public class UserService {
 		return result;
 	}
 
-	public DecodedJWT login(String email, String password) {
+	public String login(String email, String password) {
 		String hashedPassword = createPasswordHash(password);
 		User user = this.userRepository.getUserByEmailAndHashedPassword(email, hashedPassword);
 		if(null != user){
@@ -63,5 +60,25 @@ public class UserService {
 		}else{
 			throw new InvalidLoginException();
 		}
+	}
+
+	public User getUserByEmail(String email) {
+		return this.userRepository.getUserByEmail(email);
+	}
+
+	public User getUserFromToken(String token) {
+		if(!this.jwtProvider.isValid(token)){
+			throw new NotAuthorizedException();
+		}
+		String email = this.jwtProvider.getEmail(token);
+
+		User user = this.getUserByEmail(email);
+
+		if(null == user){
+			throw new UserNotFoundException();
+		}
+
+		return user;
+
 	}
 }

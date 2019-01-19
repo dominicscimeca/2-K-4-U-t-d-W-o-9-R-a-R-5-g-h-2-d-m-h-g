@@ -21,4 +21,8 @@ public class User {
 		this(email);
 		this.hashedPassword = hashedPassword;
 	}
+
+	public String getEmail(){
+		return this.email;
+	}
 }

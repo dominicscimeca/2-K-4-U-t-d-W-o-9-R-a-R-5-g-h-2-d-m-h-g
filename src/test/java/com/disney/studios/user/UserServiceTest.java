@@ -1,16 +1,20 @@
 package com.disney.studios.user;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.disney.studios.dogimage.vote.NotAuthorizedException;
+import com.disney.studios.dogimage.vote.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
@@ -19,7 +23,7 @@ public class UserServiceTest {
 	private JWTProvider fakeJWTProvider;
 	private String email;
 	private User user;
-	private DecodedJWT jwt;
+	private String token;
 
 	@Before
 	public void setUp(){
@@ -27,10 +31,10 @@ public class UserServiceTest {
 		this.fakeJWTProvider = mock(JWTProvider.class);
 		this.userService = new UserService(this.fakeUserRepository, this.fakeJWTProvider);
 		this.email = "email@email.com";
-		this.jwt = mock(DecodedJWT.class);
+		this.token = "valid-token";
 		this.user = new User(email, "");
 
-		when(this.fakeJWTProvider.constructJWT(any())).thenReturn(jwt);
+		when(this.fakeJWTProvider.constructJWT(any())).thenReturn(token);
 	}
 
 	@Test
@@ -39,10 +43,10 @@ public class UserServiceTest {
 		String password = "secretsecret";
 
 		//when
-		DecodedJWT jwt = this.userService.register(email, password);
+		String token = this.userService.register(email, password);
 
 		//then
-		assertThat(jwt).isEqualTo(this.jwt);
+		assertThat(token).isEqualTo(this.token);
 	}
 
 	@Test(expected = NotAValidEmailException.class)
@@ -68,13 +72,13 @@ public class UserServiceTest {
 		//given
 		String email = "email@email.com";
 		String password = "secret";
-		when(this.fakeUserRepository.getUserByEmailAndHashedPassword(email, any())).thenReturn(user);
+		when(this.fakeUserRepository.getUserByEmailAndHashedPassword(eq(email), any())).thenReturn(user);
 
 		//when
-		DecodedJWT jwt = this.userService.login(email, password);
+		String token = this.userService.login(email, password);
 
 		//then
-		assertThat(jwt).isEqualTo(this.jwt);
+		assertThat(token).isEqualTo(this.token);
 	}
 
 	@Test(expected = InvalidLoginException.class)
@@ -82,9 +86,44 @@ public class UserServiceTest {
 		//given
 		String email = "email@email.com";
 		String password = "secret";
-		when(this.fakeUserRepository.getUserByEmailAndHashedPassword(email, any())).thenReturn(null);
+		when(this.fakeUserRepository.getUserByEmailAndHashedPassword(eq(email), any())).thenReturn(null);
 
 		//when
 		this.userService.login(email, password);
+	}
+
+	@Test
+	public void shouldGetUserByEmail(){
+		//given
+		String email = "email@email.com";
+		when(this.fakeUserRepository.getUserByEmail(email)).thenReturn(user);
+
+		//when
+		User user = this.userService.getUserByEmail(email);
+
+		//then
+		assertThat(user).isEqualTo(this.user);
+	}
+
+	@Test(expected = NotAuthorizedException.class)
+	public void shouldUseVoteServiceToVoteUpNotAuthorized() throws MalformedURLException {
+		//given
+		when(this.fakeJWTProvider.isValid(any())).thenReturn(false);
+
+		//when
+		this.userService.getUserFromToken("");
+
+	}
+
+	@Test(expected = UserNotFoundException.class)
+	public void shouldUseVoteServiceToVoteDownNotAuthorized() throws MalformedURLException {
+		//given
+		when(this.fakeJWTProvider.isValid(any())).thenReturn(true);
+		when(this.fakeUserRepository.getUserByEmail(any())).thenReturn(null);
+
+		//when
+		this.userService.getUserFromToken(null);
+
+		//then
 	}
 }

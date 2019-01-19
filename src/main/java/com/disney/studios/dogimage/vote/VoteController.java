@@ -1,7 +1,9 @@
 package com.disney.studios.dogimage.vote;
 
+import com.disney.studios.user.JWTProvider;
 import com.disney.studios.user.User;
 import com.disney.studios.user.UserService;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -18,14 +20,22 @@ public class VoteController {
 	}
 
 	@RequestMapping(path = "/dogs/{url}/vote/up", method = RequestMethod.POST)
-	public void voteUp(String url) throws MalformedURLException {
-		User user = this.userService.getUser();
+	public void voteUp(@RequestHeader(value="Authorization") String authorizationHeader, String url) throws MalformedURLException {
+		String token = getTokenFromHeader(authorizationHeader);
+		User user = this.userService.getUserFromToken(token);
+
 		this.voteService.voteUp(new URL(url), user);
 	}
 
 	@RequestMapping(path = "/dogs/{url}/vote/down", method = RequestMethod.POST)
-	public void voteDown(String url) throws MalformedURLException {
-		User user = this.userService.getUser();
+	public void voteDown(@RequestHeader(value="Authorization") String authorizationHeader, String url) throws MalformedURLException {
+		String token = getTokenFromHeader(authorizationHeader);
+		User user = this.userService.getUserFromToken(token);
+
 		this.voteService.voteDown(new URL(url), user);
+	}
+
+	private String getTokenFromHeader(String authHeader){
+		return authHeader.split(" ")[1];
 	}
 }
