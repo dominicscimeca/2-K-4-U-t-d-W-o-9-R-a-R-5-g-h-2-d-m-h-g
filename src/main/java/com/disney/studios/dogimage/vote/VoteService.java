@@ -1,6 +1,6 @@
 package com.disney.studios.dogimage.vote;
 
-import com.disney.studios.dogimage.DogImage;
+import com.disney.studios.dogimage.DogImageDTO;
 import com.disney.studios.dogimage.DogImageService;
 import com.disney.studios.user.User;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +23,14 @@ public class VoteService {
 	}
 
 	private Vote vote(Integer imageId, Integer voteUpdate, User user){
-		Optional<DogImage> dog = this.dogImageService.getDogImage(imageId);
+		Optional<DogImageDTO> dog = this.dogImageService.getDogImage(imageId);
 
 		if(dog.isPresent()){
+			Optional<Vote> existingVote = this.voteRepository.findByDogAndUser(imageId, user.getId());
+			if(existingVote.isPresent()){
+				throw new ExistingVoteException();
+			}
+
 			Vote vote = new Vote(imageId, voteUpdate, user.getId());
 
 			return this.voteRepository.save(vote);

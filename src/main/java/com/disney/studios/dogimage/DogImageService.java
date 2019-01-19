@@ -1,53 +1,40 @@
 package com.disney.studios.dogimage;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@AllArgsConstructor
 public class DogImageService {
 	private final DogImageRepository dogImageRepository;
 
-	public DogImageService(DogImageRepository dogImageRepository) {
-		this.dogImageRepository = dogImageRepository;
-	}
-
 	public void save(URL url, String breed) {
-		this.save(new DogImage(url, breed));
+		this.dogImageRepository.save(new DogImage(url, breed));
 	}
 
-	protected void save(DogImage dog) {
-		this.dogImageRepository.save(dog);
-	}
-
-	public Map<String, List<URL>> getAllDogImagesByBreed() {
-		Iterable<DogImage> dogImages = this.dogImageRepository.findAll();
+	public Map<String, Set<DogImageDTO>> getAllDogImagesByBreed() {
+		Iterable<DogImageDTO> dogImages = this.dogImageRepository.findAllDTO();
 
 		return StreamSupport.stream(dogImages.spliterator(), true)
 				.collect(Collectors.groupingBy(
-						DogImage::getBreed,
-						Collectors.mapping(DogImage::getUrl, Collectors.toList())
+						DogImageDTO::getBreed,
+						Collectors.mapping(Function.identity(), Collectors.toSet())
 				));
 	}
 
-	public List<URL> getDogImagesByBreed(String breed) {
-		Iterable<DogImage> dogImages = this.dogImageRepository.findAllByBreed(breed);
-
-		return StreamSupport.stream(dogImages.spliterator(), true)
-				.map(DogImage::getUrl)
-				.collect(Collectors.toList());
+	public Iterable<DogImageDTO> getDogImagesByBreed(String breed) {
+		return this.dogImageRepository.findAllDTOByBreed(breed);
 	}
 
-	public DogImage getDogImageByURL(URL url) {
-		return null;
-	}
-
-	public Optional<DogImage> getDogImage(Integer imageId) {
-		return this.dogImageRepository.findById(imageId);
+	public Optional<DogImageDTO> getDogImage(Integer imageId) {
+		return this.dogImageRepository.findDTOById(imageId);
 	}
 }

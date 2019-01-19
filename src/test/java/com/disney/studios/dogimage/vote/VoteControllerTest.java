@@ -55,4 +55,19 @@ public class VoteControllerTest {
 		//then
 		verify(fakeVoteService, times(1)).voteDown(id, this.user);
 	}
+
+	@Test
+	public void handlesUserNotFound() {
+		//given
+		Integer id = 5;
+		String token = "valid-token";
+		String authorizationHeader = "Bearer " + token;
+		when(userService.getUserFromToken(token)).thenThrow(UserNotFoundException.class);
+
+		//when
+		this.voteController.voteDown(authorizationHeader, id);
+
+		//then
+		verify(fakeVoteService, times(1)).voteDown(id, this.user);
+	}
 }

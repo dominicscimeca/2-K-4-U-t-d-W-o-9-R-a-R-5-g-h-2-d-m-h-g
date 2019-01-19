@@ -8,10 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.*;
@@ -45,23 +42,23 @@ public class DogImageServiceTest {
 	@Test
 	public void shouldGetAllDogImagesByBreed() throws MalformedURLException {
 		//given
-		List<DogImage> dogImagesInDatabase = Arrays.asList(
-				getTestDogImage("http://www.google.com","Breed 1"),
-				getTestDogImage("http://www.yahoo.com","Breed 2")
+		List<DogImageDTO> dogImagesInDatabase = Arrays.asList(
+				getTestDogImageDTO("http://www.google.com","Breed 1"),
+				getTestDogImageDTO("http://www.yahoo.com","Breed 2")
 		);
-		Map<String, List<URL>> expectedDogImages = ImmutableMap.<String, List<URL>>builder()
+		Map<String, Set<DogImageDTO>> expectedDogImages = ImmutableMap.<String, Set<DogImageDTO>>builder()
 			.put(
-				dogImagesInDatabase.get(0).getBreed(), Collections.singletonList(dogImagesInDatabase.get(0).getUrl())
+				dogImagesInDatabase.get(0).getBreed(), Collections.singleton(dogImagesInDatabase.get(0))
 			)
 			.put(
-				dogImagesInDatabase.get(1).getBreed(), Collections.singletonList(dogImagesInDatabase.get(1).getUrl())
+				dogImagesInDatabase.get(1).getBreed(), Collections.singleton(dogImagesInDatabase.get(1))
 			)
 			.build();
 
-		when(fakeDogImageRepository.findAll()).thenReturn(dogImagesInDatabase);
+		when(fakeDogImageRepository.findAllDTO()).thenReturn(dogImagesInDatabase);
 
 		//when
-		Map<String, List<URL>> returnedDogImages = dogImageService.getAllDogImagesByBreed();
+		Map<String, Set<DogImageDTO>> returnedDogImages = dogImageService.getAllDogImagesByBreed();
 
 		//then
 		assertThat(returnedDogImages).isEqualTo(expectedDogImages);
@@ -70,18 +67,34 @@ public class DogImageServiceTest {
 	@Test
 	public void shouldGetDogsOfAParticularBreed() throws MalformedURLException {
 		//given
-		List<DogImage> dogImages = Arrays.asList(getTestDogImage("http://google.com", "Breed 1"));
-		List<URL> expectedDogImages =  Collections.singletonList(dogImages.get(0).getUrl());
-		when(fakeDogImageRepository.findAllByBreed(dogImages.get(0).getBreed())).thenReturn(dogImages);
+		String breed = "German Shepard";
+
+		Iterable<DogImageDTO> dogImages = Collections.singletonList(getTestDogImageDTO("http://google.com", breed));
+		when(fakeDogImageRepository.findAllDTOByBreed(breed)).thenReturn(dogImages);
 
 		//when
-		List<URL> returnedDogImages = dogImageService.getDogImagesByBreed(dogImages.get(0).getBreed());
+		Iterable<DogImageDTO> returnedDogImages = dogImageService.getDogImagesByBreed(breed);
 
 		//then
-		assertThat(returnedDogImages).isEqualTo(expectedDogImages);
+		assertThat(returnedDogImages).isEqualTo(dogImages);
 	}
 
-	private DogImage getTestDogImage(String url, String breed) throws MalformedURLException {
-		return new DogImage(new URL(url), breed);
+	@Test
+	public void getDog() throws MalformedURLException {
+		//given
+		Integer id = 1;
+		DogImageDTO expectedDogImage = new DogImageDTO(id, new URL("http://localhost"), "Golden Retriever", 19L);
+
+		when(fakeDogImageRepository.findDTOById(id)).thenReturn(Optional.of(expectedDogImage));
+
+		//when
+		Optional<DogImageDTO> response = dogImageService.getDogImage(id);
+
+		//then
+		assertThat(response.get()).isEqualTo(expectedDogImage);
+	}
+
+	private DogImageDTO getTestDogImageDTO(String url, String breed) throws MalformedURLException {
+		return new DogImageDTO(1, new URL(url), breed, 1L);
 	}
 }

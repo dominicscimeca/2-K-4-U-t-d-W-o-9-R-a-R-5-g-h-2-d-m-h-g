@@ -5,9 +5,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URL;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class DogImageController {
@@ -18,12 +17,12 @@ public class DogImageController {
 	}
 
 	@RequestMapping(path = "/dogsByBreed", method = RequestMethod.GET)
-	public Map<String, List<URL>> getDogImagesGroupedByBreed() {
+	public Map<String, Set<DogImageDTO>> getDogImagesGroupedByBreed() {
 		return this.dogImageService.getAllDogImagesByBreed();
 	}
 
 	@RequestMapping(path = "/dogs", method = RequestMethod.GET)
-	public List<URL> getDogImages(@RequestParam(value = "breed") String breed) {
+	public Iterable<DogImageDTO> getDogImages(@RequestParam(value = "breed") String breed) {
 		return this.dogImageService.getDogImagesByBreed(breed);
 	}
 }

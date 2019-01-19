@@ -1,6 +1,6 @@
 package com.disney.studios.dogimage.vote;
 
-import com.disney.studios.dogimage.DogImage;
+import com.disney.studios.dogimage.DogImageDTO;
 import com.disney.studios.dogimage.DogImageService;
 import com.disney.studios.user.User;
 import org.junit.Before;
@@ -20,7 +20,7 @@ public class VoteServiceTest {
 	private VoteRepository fakeVoteRepository;
 	private DogImageService fakeDogImageService;
 	private URL url;
-	private DogImage dog;
+	private DogImageDTO dog;
 	private User user;
 	private Integer id;
 
@@ -32,7 +32,7 @@ public class VoteServiceTest {
 
 		this.url = new URL("http://google.com");
 		this.id = 7;
-		this.dog = new DogImage(id, url, "Breed 1");
+		this.dog = new DogImageDTO(id, url, "Breed 1", 1L);
 		this.user = new User("email@email.com");
 	}
 
@@ -41,6 +41,7 @@ public class VoteServiceTest {
 		//given
 		Vote expectedVote = new Vote(id, Vote.UP, user.getId());
 		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.empty());
 
 		//when
 		voteService.voteUp(id, user);
@@ -54,6 +55,7 @@ public class VoteServiceTest {
 		//given
 		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
 		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.empty());
 
 		//when
 		voteService.voteDown(id, user);
@@ -61,6 +63,29 @@ public class VoteServiceTest {
 		//then
 		verify(fakeVoteRepository, times(1)).save(expectedVote);
 	}
+
+	@Test(expected = ExistingVoteException.class)
+	public void shouldSaveVoteForVoteUpExistingVoteFromUser() {
+		//given
+		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
+		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.of(expectedVote));
+
+		//when
+		voteService.voteUp(id, user);
+	}
+
+	@Test(expected = ExistingVoteException.class)
+	public void shouldSaveVoteForVoteDownExistingVoteFromUser() {
+		//given
+		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
+		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.of(expectedVote));
+
+		//when
+		voteService.voteDown(id, user);
+	}
+
 
 	@Test(expected = DogImageNotFoundException.class)
 	public void shouldThrowAnErrorIfImageDoesntExistVoteUp() {
