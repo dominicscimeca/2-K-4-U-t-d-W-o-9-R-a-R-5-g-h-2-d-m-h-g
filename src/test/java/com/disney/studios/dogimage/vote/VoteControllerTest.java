@@ -5,8 +5,6 @@ import com.disney.studios.dogimage.vote.exception.UnauthorizedException;
 import com.disney.studios.dogimage.vote.exception.VoteDeniedException;
 import com.disney.studios.user.User;
 import com.disney.studios.user.UserService;
-import com.disney.studios.user.auth.Auth;
-import com.disney.studios.user.auth.AuthAspect;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest({VoteController.class, Auth.class, AuthAspect.class})
+@WebMvcTest({VoteController.class})
 public class VoteControllerTest {
 
 	@Autowired
@@ -46,7 +44,7 @@ public class VoteControllerTest {
 	private Instant instant;
 
 	@Before
-	public void setUp(){
+	public void setUp() {
 		this.notValidAuthHeader = "not-valid-auth-header";
 		this.validAuthHeader = "valid-auth-header";
 		this.email = "me@me.com";
@@ -60,6 +58,8 @@ public class VoteControllerTest {
 
 	@Test
 	public void shouldHaveCorrectResponseForBadToken() throws Exception {
+		when(voteService.voteDown(eq(2), isA(User.class))).thenThrow(VoteDeniedException.class);
+
 		//then
 		this.mockMvc.perform(
 				post("/dogs/1/vote/down")
@@ -78,7 +78,7 @@ public class VoteControllerTest {
 				.andExpect(status().isOk());
 
 		//then
-		verify(voteService, times(1)).voteUp(1, this.user);
+		verify(voteService, times(1)).voteUp(eq(1), isA(User.class));
 	}
 
 	@Test
@@ -90,12 +90,12 @@ public class VoteControllerTest {
 				.andExpect(status().isOk());
 
 		//then
-		verify(voteService, times(1)).voteDown(2, this.user);
+		verify(voteService, times(1)).voteDown(eq(2), isA(User.class));
 	}
 
 	@Test
 	public void shouldNotBeAbleToVoteTwice() throws Exception {
-		when(voteService.voteDown(2, this.user)).thenThrow(VoteDeniedException.class);
+		when(voteService.voteDown(eq(2), isA(User.class))).thenThrow(VoteDeniedException.class);
 
 		this.mockMvc.perform(
 				post("/dogs/2/vote/down")

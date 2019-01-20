@@ -1,5 +1,6 @@
 package com.disney.studios;
 
+import com.disney.studios.user.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -17,7 +18,9 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
 	@Bean
 	public Docket productApi() {
 		return new Docket(DocumentationType.SWAGGER_2)
-				.select()                 .apis(RequestHandlerSelectors.basePackage("com.disney.studios"))
+				.ignoredParameterTypes(User.class)
+				.select()
+				.apis(RequestHandlerSelectors.basePackage("com.disney.studios"))
 				.paths(regex(".*"))
 				.build();
 

@@ -22,6 +22,6 @@ public class AuthAspect {
 		Integer imageID = (Integer) joinPoint.getArgs()[0];
 		User user = this.userService.getUserByAuthHeader(authorizationHeader);
 
-		joinPoint.proceed(new Object[]{authorizationHeader, imageID, user});
+		joinPoint.proceed(new Object[]{imageID, user});
 	}
 }
