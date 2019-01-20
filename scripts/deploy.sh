@@ -31,9 +31,9 @@ aws cloudformation ${upsertStack} \
         ParameterKey=ContainerPort,ParameterValue=${port} \
         ParameterKey=VPCStackName,ParameterValue=vpc \
         ParameterKey=UsersStackName,ParameterValue=users \
-        ParameterKey=Path,ParameterValue=/* \
+        ParameterKey=Path,ParameterValue=* \
         ParameterKey=HealthCheckPath,ParameterValue=/actuator/health \
         ParameterKey=Priority,ParameterValue=1 \
-        ParameterKey=DesiredCount,ParameterValue=1 \
+        ParameterKey=DesiredCount,ParameterValue=1
 
 aws cloudformation wait ${waitCommand} --stack-name ${appName}
