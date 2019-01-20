@@ -1,28 +1,34 @@
 package com.disney.studios.user;
 
-import org.junit.Before;
+import com.disney.studios.user.exception.InvalidLoginException;
+import com.disney.studios.user.exception.NotAValidEmailException;
+import com.disney.studios.user.exception.UserAlreadyRegisteredException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@WebMvcTest(UserController.class)
 public class UserControllerTest {
-	private UserController userController;
+
+	@MockBean
 	private UserService fakeUserService;
 
-	@Before
-	public void setUp(){
-		this.fakeUserService = mock(UserService.class) ;
-		this.userController = new UserController(fakeUserService);
-	}
-
+	@Autowired
+	private MockMvc mockMvc;
 
 	@Test
-	public void shouldLogin(){
+	public void shouldLogin() throws Exception {
 		//given
 		String email = "1234@344";
 		String password = "secret";
@@ -30,14 +36,20 @@ public class UserControllerTest {
 		when(this.fakeUserService.login(email, password)).thenReturn(token);
 
 		//when
-		String response = this.userController.login(email, password);
+		MvcResult result = this.mockMvc.perform(
+				post("/login")
+						.param("email", email)
+						.param("password", password)
+		)
+				.andExpect(status().isOk())
+				.andReturn();
 
 		//then
-		assertThat(response).isEqualTo(token);
+		assertThat(result.getResponse().getContentAsString()).isEqualTo(token);
 	}
 
 	@Test
-	public void shouldRegister(){
+	public void shouldRegister() throws Exception {
 		//given
 		String email = "1234@344";
 		String password = "secret";
@@ -45,9 +57,63 @@ public class UserControllerTest {
 		when(this.fakeUserService.register(email, password)).thenReturn(token);
 
 		//when
-		String response = this.userController.register(email, password);
+		MvcResult result = this.mockMvc.perform(
+				post("/register")
+						.param("email", email)
+						.param("password", password)
+		)
+				.andExpect(status().isOk())
+				.andReturn();
 
 		//then
-		assertThat(response).isEqualTo(token);
+		assertThat(result.getResponse().getContentAsString()).isEqualTo(token);
+	}
+
+	@Test
+	public void loginFailure() throws Exception {
+		//given
+		String email = "1234@344";
+		String password = "secret";
+		when(this.fakeUserService.login(email, password)).thenThrow(InvalidLoginException.class);
+
+		//when
+		this.mockMvc.perform(
+				post("/login")
+						.param("email", email)
+						.param("password", password)
+		)
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void registerUserAlreadyExistsFailure() throws Exception {
+		//given
+		String email = "1234@344";
+		String password = "secret";
+		when(this.fakeUserService.register(email, password)).thenThrow(UserAlreadyRegisteredException.class);
+
+		//when
+		this.mockMvc.perform(
+				post("/register")
+						.param("email", email)
+						.param("password", password)
+		)
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void registerUserNotAnEmail() throws Exception {
+		//given
+		String email = "";
+		String password = "secret";
+		when(this.fakeUserService.register(email, password)).thenThrow(NotAValidEmailException.class);
+
+		//when
+		this.mockMvc.perform(
+				post("/register")
+						.param("email", email)
+						.param("password", password)
+		)
+				.andExpect(status().isBadRequest());
 	}
 }

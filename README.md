@@ -8,12 +8,14 @@
 1. [x] Dog Entity
 1. [x] Breed Entity
 1. [x] Get All Dogs Endpoint
+1. [x] Get Dog Endpoint
 1. [ ] Documentation
-1. [ ] Error Handling
-1. [ ] Authentication
+1. [x] Error Handling
+1. [x] Authentication
 1. [ ] Logging 
 1. [ ] GMT
-1. [ ] 
+1. [ ] Swagger Documentation
+
 
 # API Challenge
 

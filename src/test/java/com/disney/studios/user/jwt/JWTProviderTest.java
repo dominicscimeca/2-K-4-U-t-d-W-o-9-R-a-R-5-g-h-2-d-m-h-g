@@ -1,7 +1,7 @@
-package com.disney.studios.user;
+package com.disney.studios.user.jwt;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.disney.studios.user.jwt.JWTProvider;
+import com.disney.studios.user.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

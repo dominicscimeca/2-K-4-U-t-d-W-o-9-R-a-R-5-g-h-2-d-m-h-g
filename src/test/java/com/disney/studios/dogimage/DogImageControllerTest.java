@@ -4,25 +4,37 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@WebMvcTest(DogImageController.class)
 public class DogImageControllerTest {
 
+	@MockBean
+	private DogImageService dogImageService;
+
+	@Autowired
+	private MockMvc mockMvc;
+
 	@Test
-	public void shouldAskDogImageServiceForImage() throws MalformedURLException {
+	public void shouldAskDogImageServiceForImage() throws Exception {
 		//given
-		DogImageService fakeDogImageService = mock(DogImageService.class);
 		Map<String, Set<DogImageDTO>> expectedMap = ImmutableMap.<String, Set<DogImageDTO>>builder()
 				.put("Breed 1",  ImmutableSet.of(
 					new DogImageDTO(1, new URL("http://google.com"), "Breed 1", 2L),
@@ -34,20 +46,23 @@ public class DogImageControllerTest {
 				))
 				.build();
 
-		when(fakeDogImageService.getAllDogImagesByBreed()).thenReturn(expectedMap);
-		DogImageController dogImageController = new DogImageController(fakeDogImageService);
+		when(dogImageService.getAllDogImagesByBreed()).thenReturn(expectedMap);
+		String expectedResponseAsString = "{\"Breed 1\":[{\"id\":1,\"url\":\"http://google.com\",\"breed\":\"Breed 1\",\"voteCount\":2},{\"id\":2,\"url\":\"http://yahoo.com\",\"breed\":\"Breed 1\",\"voteCount\":-2}],\"Breed 2\":[{\"id\":1,\"url\":\"http://hotmail.com\",\"breed\":\"Breed 2\",\"voteCount\":4},{\"id\":2,\"url\":\"http://dogs.com\",\"breed\":\"Breed 2\",\"voteCount\":-1}]}";
 
 		//when
-		Map<String, Set<DogImageDTO>> returnedMap = dogImageController.getDogImagesGroupedByBreed();
+		MvcResult result = this.mockMvc.perform(get("/breed/dogs"))
+				.andExpect(status().isOk())
+				.andReturn();
 
 		//then
-		assertThat(returnedMap).isEqualTo(expectedMap);
+		String responseAsAString = result.getResponse().getContentAsString();
+
+		assertThat(responseAsAString).isEqualTo(expectedResponseAsString);
 	}
 
 	@Test
-	public void shouldAskDogImageServiceForParticularBreed() throws MalformedURLException {
+	public void shouldAskDogImageServiceForParticularBreed() throws Exception {
 		//given
-		DogImageService fakeDogImageService = mock(DogImageService.class);
 		String breed = "Breed 1";
 		String url1 = "http://yahoo.com";
 		String url2 = "http://google.com";
@@ -56,13 +71,49 @@ public class DogImageControllerTest {
 				new DogImageDTO(2, new URL(url2), breed, -2L)
 		);
 
-		when(fakeDogImageService.getDogImagesByBreed(breed)).thenReturn(expectedImages);
-		DogImageController dogImageController = new DogImageController(fakeDogImageService);
+		when(dogImageService.getDogImagesByBreed(breed)).thenReturn(expectedImages);
+		String expectedResponseAsString = "[{\"id\":1,\"url\":\"http://yahoo.com\",\"breed\":\"Breed 1\",\"voteCount\":2},{\"id\":2,\"url\":\"http://google.com\",\"breed\":\"Breed 1\",\"voteCount\":-2}]";
 
 		//when
-		Iterable<DogImageDTO> returnedImages = dogImageController.getDogImages(breed);
+		MvcResult result = this.mockMvc.perform(get("/dogs?breed={breed}", breed))
+				.andExpect(status().isOk())
+				.andReturn();
 
 		//then
-		assertThat(returnedImages).isEqualTo(expectedImages);
+		String responseAsAString = result.getResponse().getContentAsString();
+
+		assertThat(responseAsAString).isEqualTo(expectedResponseAsString);
+	}
+
+	@Test
+	public void getDog() throws Exception {
+		//given
+		Integer id = 9;
+		DogImageDTO dogImageDTO = new DogImageDTO(9, new URL("http://google.com"), "Breed 1", 2L);
+
+
+		when(dogImageService.getDogImage(id)).thenReturn(Optional.of(dogImageDTO));
+		String expectedResponseAsString = "{\"id\":9,\"url\":\"http://google.com\",\"breed\":\"Breed 1\",\"voteCount\":2}";
+
+		//when
+		MvcResult result = this.mockMvc.perform(get("/dogs/{id}", id))
+				.andExpect(status().isOk())
+				.andReturn();
+
+		//then
+		String responseAsAString = result.getResponse().getContentAsString();
+
+		assertThat(responseAsAString).isEqualTo(expectedResponseAsString);
+	}
+
+	@Test
+	public void getDogNotFound() throws Exception {
+		//given
+		Integer id = 9;
+		when(dogImageService.getDogImage(id)).thenReturn(Optional.empty());
+
+		//when
+		this.mockMvc.perform(get("/dogs/{id}", id))
+				.andExpect(status().isNotFound());
 	}
 }

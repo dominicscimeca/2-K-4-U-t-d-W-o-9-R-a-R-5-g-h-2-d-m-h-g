@@ -28,6 +28,7 @@ public class VoteControllerTest {
 
 	@MockBean
 	private UserService userService;
+
 	private String notValidToken;
 	private String validToken;
 	private String email;
