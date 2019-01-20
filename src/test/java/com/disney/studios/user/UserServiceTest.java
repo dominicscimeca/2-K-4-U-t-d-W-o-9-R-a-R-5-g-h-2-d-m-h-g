@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.net.MalformedURLException;
+import java.util.Date;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +27,7 @@ public class UserServiceTest {
 	private String email;
 	private User user;
 	private String token;
+	private UserToken userToken;
 
 	@Before
 	public void setUp(){
@@ -35,21 +36,24 @@ public class UserServiceTest {
 		this.userService = new UserService(this.fakeUserRepository, this.fakeJWTProvider);
 		this.email = "email@email.com";
 		this.token = "valid-token";
-		this.user = new User(email, "");
+		this.userToken = new UserToken(this.email, this.token, new Date());
+		this.user = new User(email, "secrethashed");
 
-		when(this.fakeJWTProvider.constructJWT(any())).thenReturn(token);
+		when(this.fakeUserRepository.getUserByEmail(this.email)).thenReturn(this.user);
+		when(this.fakeJWTProvider.constructJWT(this.user)).thenReturn(userToken);
 	}
 
 	@Test
 	public void shouldRegisterIfNew(){
 		//given
-		String password = "secretsecret";
+		when(this.fakeUserRepository.getUserByEmail(this.email)).thenReturn(null);
+		when(this.fakeUserRepository.save(any())).thenReturn(this.user);
 
 		//when
-		String token = this.userService.register(email, password);
+		UserToken token = this.userService.register(email, "secret");
 
 		//then
-		assertThat(token).isEqualTo(this.token);
+		assertThat(token).isEqualTo(this.userToken);
 	}
 
 	@Test(expected = NotAValidEmailException.class)
@@ -78,10 +82,10 @@ public class UserServiceTest {
 		when(this.fakeUserRepository.getUserByEmailAndHashedPassword(eq(email), any())).thenReturn(user);
 
 		//when
-		String token = this.userService.login(email, password);
+		UserToken token = this.userService.login(email, password);
 
 		//then
-		assertThat(token).isEqualTo(this.token);
+		assertThat(token.getToken()).isEqualTo(this.token);
 	}
 
 	@Test(expected = InvalidLoginException.class)
@@ -125,24 +129,21 @@ public class UserServiceTest {
 	}
 
 	@Test(expected = UnauthorizedException.class)
-	public void shouldUseVoteServiceToVoteUpNotAuthorized() throws MalformedURLException {
+	public void shouldUseVoteServiceToVoteUpNotAuthorized() {
 		//given
 		when(this.fakeJWTProvider.isValid(any())).thenReturn(false);
 
 		//when
 		this.userService.getUserFromToken("");
-
 	}
 
 	@Test(expected = UserNotFoundException.class)
-	public void shouldUseVoteServiceToVoteDownNotAuthorized() throws MalformedURLException {
+	public void shouldUseVoteServiceToVoteDownNotAuthorized() {
 		//given
 		when(this.fakeJWTProvider.isValid(any())).thenReturn(true);
 		when(this.fakeUserRepository.getUserByEmail(any())).thenReturn(null);
 
 		//when
 		this.userService.getUserFromToken(null);
-
-		//then
 	}
 }

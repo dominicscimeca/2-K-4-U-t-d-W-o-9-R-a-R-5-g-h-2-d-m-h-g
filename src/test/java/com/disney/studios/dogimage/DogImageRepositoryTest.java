@@ -33,7 +33,7 @@ public class DogImageRepositoryTest {
 		URL url = new URL("http://google.com");
 		String breed = "Dalmation";
 		DogImage dogImage = this.dogImageRepository.save(new DogImage(url, breed));
-		DogImageDTO expectedDogImageDTO = new DogImageDTO(dogImage.getId(), dogImage.getUrl(), dogImage.getBreed(), -1L);
+		DogImageDTO expectedDogImageDTO = new DogImageDTO(dogImage.getId(), dogImage.getUrl().toString(), dogImage.getBreed(), -1L);
 
 		this.voteRepository.save(new Vote(dogImage.getId(), Vote.DOWN, userId));
 		this.voteRepository.save(new Vote(dogImage.getId(), Vote.DOWN, userId));
@@ -92,7 +92,7 @@ public class DogImageRepositoryTest {
 	private DogImageDTO buildDogImageDTO(DogImage dogImage, Long voteCount){
 		return new DogImageDTO(
 			dogImage.getId(),
-			dogImage.getUrl(),
+			dogImage.getUrl().toString(),
 			dogImage.getBreed(),
 			voteCount
 		);

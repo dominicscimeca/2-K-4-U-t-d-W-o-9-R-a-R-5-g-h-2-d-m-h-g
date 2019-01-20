@@ -19,7 +19,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final JWTProvider jwtProvider;
 
-	public String register(String email, String password) {
+	public UserToken register(String email, String password) {
 		String passwordHash = createPasswordHash(password);
 		User existingUser = this.userRepository.getUserByEmail(email);
 		if(!isValidEmailAddress(email)){
@@ -30,8 +30,7 @@ public class UserService {
 			throw new UserAlreadyRegisteredException(String.format("There is already a registered account under this email. email='%s'",email));
 		}
 
-		User newUser = new User(email, passwordHash);
-		this.userRepository.save(newUser);
+		User newUser = this.userRepository.save(new User(email, passwordHash));
 
 		return this.jwtProvider.constructJWT(newUser);
 	}
@@ -52,7 +51,7 @@ public class UserService {
 		return result;
 	}
 
-	public String login(String email, String password) {
+	public UserToken login(String email, String password) {
 		String hashedPassword = createPasswordHash(password);
 		User user = this.userRepository.getUserByEmailAndHashedPassword(email, hashedPassword);
 		if(null != user){

@@ -25,7 +25,7 @@ public class VoteService {
 	}
 
 	private Vote vote(Integer imageId, Integer voteUpdate, User user){
-		Optional<DogImageDTO> dog = this.dogImageService.getDogImage(imageId);
+		Optional<DogImageDTO> dog = this.dogImageService.getDogImageOptional(imageId);
 
 		if(dog.isPresent()){
 			Optional<Vote> existingVote = this.voteRepository.findByDogAndUser(imageId, user.getId());

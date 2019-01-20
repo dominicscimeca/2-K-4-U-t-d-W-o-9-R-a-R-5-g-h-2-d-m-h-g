@@ -1,5 +1,6 @@
 package com.disney.studios.dogimage;
 
+import com.disney.studios.dogimage.vote.exception.DogImageNotFoundException;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +16,8 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DogImageServiceTest {
-	DogImageRepository fakeDogImageRepository;
-	DogImageService dogImageService;
+	private DogImageRepository fakeDogImageRepository;
+	private DogImageService dogImageService;
 
 	@Before
 	public void setUp(){
@@ -40,7 +41,7 @@ public class DogImageServiceTest {
 	}
 
 	@Test
-	public void shouldGetAllDogImagesByBreed() throws MalformedURLException {
+	public void shouldGetAllDogImagesByBreed() {
 		//given
 		List<DogImageDTO> dogImagesInDatabase = Arrays.asList(
 				getTestDogImageDTO("http://www.google.com","Breed 1"),
@@ -65,7 +66,7 @@ public class DogImageServiceTest {
 	}
 
 	@Test
-	public void shouldGetDogsOfAParticularBreed() throws MalformedURLException {
+	public void shouldGetDogsOfAParticularBreed() {
 		//given
 		String breed = "German Shepard";
 
@@ -80,21 +81,47 @@ public class DogImageServiceTest {
 	}
 
 	@Test
-	public void getDog() throws MalformedURLException {
+	public void getDogOptional() {
 		//given
 		Integer id = 1;
-		DogImageDTO expectedDogImage = new DogImageDTO(id, new URL("http://localhost"), "Golden Retriever", 19L);
+		DogImageDTO expectedDogImage = new DogImageDTO(id, "http://localhost", "Golden Retriever", 19L);
 
 		when(fakeDogImageRepository.findDTOById(id)).thenReturn(Optional.of(expectedDogImage));
 
 		//when
-		Optional<DogImageDTO> response = dogImageService.getDogImage(id);
+		Optional<DogImageDTO> response = dogImageService.getDogImageOptional(id);
 
 		//then
 		assertThat(response.get()).isEqualTo(expectedDogImage);
 	}
 
-	private DogImageDTO getTestDogImageDTO(String url, String breed) throws MalformedURLException {
-		return new DogImageDTO(1, new URL(url), breed, 1L);
+	@Test
+	public void getDog() {
+		//given
+		Integer id = 1;
+		DogImageDTO expectedDogImage = new DogImageDTO(id, "http://localhost", "Golden Retriever", 19L);
+
+		when(fakeDogImageRepository.findDTOById(id)).thenReturn(Optional.of(expectedDogImage));
+
+		//when
+		DogImageDTO response = dogImageService.getDogImage(id);
+
+		//then
+		assertThat(response).isEqualTo(expectedDogImage);
+	}
+
+	@Test(expected = DogImageNotFoundException.class)
+	public void getDogNotFound() {
+		//given
+		Integer id = 1;
+
+		when(fakeDogImageRepository.findDTOById(id)).thenReturn(Optional.empty());
+
+		//when
+		dogImageService.getDogImage(id);
+	}
+
+	private DogImageDTO getTestDogImageDTO(String url, String breed) {
+		return new DogImageDTO(1, url, breed, 1L);
 	}
 }

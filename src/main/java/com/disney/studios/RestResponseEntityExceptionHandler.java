@@ -9,6 +9,7 @@ import com.disney.studios.user.exception.NotAValidEmailException;
 import com.disney.studios.user.exception.UserAlreadyRegisteredException;
 import com.disney.studios.user.exception.UserNotFoundException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,22 +18,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Date;
+import java.time.Instant;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+	private final InstantService instantService;
 
 	class ExceptionDetails {
-		@Getter private final Date timestamp;
+		@Getter private final Instant timestamp;
 		@Getter private final int status;
 		@Getter private final String error;
 		@Getter private final String message;
 		@Getter private final String path;
 
 		ExceptionDetails(Exception exception, HttpStatus status, String path){
-			this.timestamp = new Date();
+			this.timestamp = instantService.getInstantNow();
 			this.status = status.value();
-			this.error = exception.getClass().getCanonicalName();
+			this.error = exception.getClass().getSimpleName();
 			this.message = exception.getMessage();
 			this.path = path;
 		}

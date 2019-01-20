@@ -4,8 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.disney.studios.InstantService;
 import com.disney.studios.dogimage.vote.exception.UnauthorizedException;
 import com.disney.studios.user.User;
+import com.disney.studios.user.UserToken;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
@@ -13,13 +15,21 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Date;
+
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Component
 public class JWTProvider {
-
+	private final InstantService instantService;
 	private Algorithm algorithmRS;
 
-	JWTProvider() throws NoSuchAlgorithmException {
+	JWTProvider(InstantService instantService) throws NoSuchAlgorithmException {
+		this.instantService = instantService;
+		createAlgorithm();
+	}
+
+	private void createAlgorithm() throws NoSuchAlgorithmException {
 		KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
 		kpg.initialize(2048);
 		KeyPair kp = kpg.generateKeyPair();
@@ -37,12 +47,19 @@ public class JWTProvider {
 		return true;
 	}
 
-	public String constructJWT(User user) {
+	public UserToken constructJWT(User user) {
 		try {
-			return JWT.create()
+			Date expiresAt = new Date(instantService.getInstantNow().plus(1, HOURS).toEpochMilli());
+
+			String token = JWT.create()
 					.withIssuer("auth0")
-					.withClaim("email", user.getEmail())
+					.withSubject(user.getEmail())
+					.withExpiresAt(expiresAt)
+					.withClaim("userId", user.getId())
 					.sign(algorithmRS);
+
+			return new UserToken(user.getEmail(), token, expiresAt);
+
 		} catch (JWTCreationException exception){
 			//Invalid Signing configuration / Couldn't convert Claims.
 		}
@@ -50,7 +67,15 @@ public class JWTProvider {
 	}
 
 	public String getEmail(String token){
-		return JWT.decode(token).getClaim("email").asString();
+		return JWT.decode(token).getSubject();
+	}
+
+	public Integer getUserId(String token){
+		return JWT.decode(token).getClaim("userId").asInt();
+	}
+
+	public Date getExpiration(String token) {
+		return JWT.decode(token).getExpiresAt();
 	}
 
 	public String getTokenFromHeader(String authHeader) {

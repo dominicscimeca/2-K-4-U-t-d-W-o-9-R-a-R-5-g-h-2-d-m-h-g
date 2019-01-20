@@ -10,8 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -21,18 +19,18 @@ public class VoteServiceTest {
 	private VoteService voteService;
 	private VoteRepository fakeVoteRepository;
 	private DogImageService fakeDogImageService;
-	private URL url;
+	private String url;
 	private DogImageDTO dog;
 	private User user;
 	private Integer id;
 
 	@Before
-	public void setUp() throws MalformedURLException {
+	public void setUp() {
 		this.fakeVoteRepository = mock(VoteRepository.class);
 		this.fakeDogImageService = mock(DogImageService.class);
 		this.voteService = new VoteService(fakeVoteRepository, fakeDogImageService);
 
-		this.url = new URL("http://google.com");
+		this.url = "http://google.com";
 		this.id = 7;
 		this.dog = new DogImageDTO(id, url, "Breed 1", 1L);
 		this.user = new User("email@email.com");
@@ -42,7 +40,7 @@ public class VoteServiceTest {
 	public void shouldSaveVoteForVoteUp() {
 		//given
 		Vote expectedVote = new Vote(id, Vote.UP, user.getId());
-		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeDogImageService.getDogImageOptional(id)).thenReturn(Optional.of(dog));
 		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.empty());
 
 		//when
@@ -56,7 +54,7 @@ public class VoteServiceTest {
 	public void shouldSaveVoteForVoteDown() {
 		//given
 		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
-		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeDogImageService.getDogImageOptional(id)).thenReturn(Optional.of(dog));
 		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.empty());
 
 		//when
@@ -70,7 +68,7 @@ public class VoteServiceTest {
 	public void shouldSaveVoteForVoteUpExistingVoteFromUser() {
 		//given
 		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
-		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeDogImageService.getDogImageOptional(id)).thenReturn(Optional.of(dog));
 		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.of(expectedVote));
 
 		//when
@@ -81,7 +79,7 @@ public class VoteServiceTest {
 	public void shouldSaveVoteForVoteDownExistingVoteFromUser() {
 		//given
 		Vote expectedVote = new Vote(id, Vote.DOWN, user.getId());
-		when(this.fakeDogImageService.getDogImage(id)).thenReturn(Optional.of(dog));
+		when(this.fakeDogImageService.getDogImageOptional(id)).thenReturn(Optional.of(dog));
 		when(this.fakeVoteRepository.findByDogAndUser(id, null)).thenReturn(Optional.of(expectedVote));
 
 		//when

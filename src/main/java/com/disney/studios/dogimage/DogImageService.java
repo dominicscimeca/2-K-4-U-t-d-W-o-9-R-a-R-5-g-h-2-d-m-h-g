@@ -1,5 +1,6 @@
 package com.disney.studios.dogimage;
 
+import com.disney.studios.dogimage.vote.exception.DogImageNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,16 @@ public class DogImageService {
 		return this.dogImageRepository.findAllDTOByBreed(breed);
 	}
 
-	public Optional<DogImageDTO> getDogImage(Integer imageId) {
+	public DogImageDTO getDogImage(Integer imageId) {
+		Optional<DogImageDTO> dogImageDTO = this.getDogImageOptional(imageId);
+		if(dogImageDTO.isPresent()){
+			return dogImageDTO.get();
+		}else{
+			throw new DogImageNotFoundException("Dog Image is Not Found");
+		}
+	}
+
+	public Optional<DogImageDTO> getDogImageOptional(Integer imageId) {
 		return this.dogImageRepository.findDTOById(imageId);
 	}
 }
