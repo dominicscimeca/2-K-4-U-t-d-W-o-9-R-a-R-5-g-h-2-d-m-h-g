@@ -5,6 +5,8 @@ import com.disney.studios.dogimage.vote.exception.UnauthorizedException;
 import com.disney.studios.dogimage.vote.exception.VoteDeniedException;
 import com.disney.studios.user.User;
 import com.disney.studios.user.UserService;
+import com.disney.studios.user.auth.Auth;
+import com.disney.studios.user.auth.AuthAspect;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(VoteController.class)
+@WebMvcTest({VoteController.class, Auth.class, AuthAspect.class})
 public class VoteControllerTest {
 
 	@Autowired
