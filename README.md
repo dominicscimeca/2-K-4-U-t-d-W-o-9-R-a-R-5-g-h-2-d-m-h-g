@@ -13,8 +13,8 @@
 1. [x] Error Handling
 1. [x] Authentication
 1. [ ] Logging 
-1. [ ] GMT
-1. [ ] Swagger Documentation
+1. [X] GMT
+1. [X] Swagger Documentation
 
 
 # API Challenge
