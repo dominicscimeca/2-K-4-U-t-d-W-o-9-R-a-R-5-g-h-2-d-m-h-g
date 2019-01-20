@@ -6,7 +6,6 @@ import com.disney.studios.dogimage.vote.exception.DogImageNotFoundException;
 import com.disney.studios.dogimage.vote.exception.VoteDeniedException;
 import com.disney.studios.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,8 +13,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class VoteService {
-	@Autowired private final VoteRepository voteRepository;
-	@Autowired private final DogImageService dogImageService;
+	private final VoteRepository voteRepository;
+	private final DogImageService dogImageService;
 
 	public Vote voteUp(Integer imageId, User user) {
 		return this.vote(imageId, Vote.UP, user);

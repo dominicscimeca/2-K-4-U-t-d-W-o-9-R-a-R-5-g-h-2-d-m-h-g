@@ -1,6 +1,7 @@
 package com.disney.studios.dogimage;
 
 import com.disney.studios.dogimage.vote.exception.DogImageNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -8,12 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
+@AllArgsConstructor
 public class DogImageController {
 	private final DogImageService dogImageService;
-
-	public DogImageController(DogImageService dogImageService) {
-		this.dogImageService = dogImageService;
-	}
 
 	@RequestMapping(path = "/breed/dogs", method = RequestMethod.GET)
 	public Map<String, Set<DogImageDTO>> getDogImagesGroupedByBreed() {

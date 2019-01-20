@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.disney.studios.dogimage.vote.exception.UnauthorizedException;
 import com.disney.studios.user.User;
 import org.springframework.stereotype.Component;
 
@@ -50,5 +51,20 @@ public class JWTProvider {
 
 	public String getEmail(String token){
 		return JWT.decode(token).getClaim("email").asString();
+	}
+
+	public String getTokenFromHeader(String authHeader) {
+		if(null == authHeader){
+			throw new UnauthorizedException("Authorization Header missing. Correct Format `Authorization: Bearer $token`");
+		}
+		String[] splitHeader = authHeader.split(" ");
+		if(!"bearer".equals(splitHeader[0].toLowerCase())){
+			throw new UnauthorizedException("Authorization Header is not a Bearer token. Correct Format `Authorization: Bearer $token`");
+		}
+		if(2 != splitHeader.length){
+			throw new UnauthorizedException("Authorization Header has the incorrect format. Correct Format `Authorization: Bearer $token`");
+		}
+
+		return splitHeader[1];
 	}
 }

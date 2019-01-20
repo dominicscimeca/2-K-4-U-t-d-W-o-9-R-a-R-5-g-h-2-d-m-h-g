@@ -29,20 +29,20 @@ public class VoteControllerTest {
 	@MockBean
 	private UserService userService;
 
-	private String notValidToken;
-	private String validToken;
+	private String notValidAuthHeader;
+	private String validAuthHeader;
 	private String email;
 	private User user;
 
 	@Before
 	public void setUp(){
-		this.notValidToken = "not-valid-token";
-		this.validToken = "valid-token";
+		this.notValidAuthHeader = "not-valid-auth-header";
+		this.validAuthHeader = "valid-auth-header";
 		this.email = "me@me.com";
 		this.user = new User(this.email);
 
-		when(this.userService.getUserFromToken(notValidToken)).thenThrow(UnauthorizedException.class);
-		when(this.userService.getUserFromToken(validToken)).thenReturn(this.user);
+		when(this.userService.getUserByAuthHeader(notValidAuthHeader)).thenThrow(UnauthorizedException.class);
+		when(this.userService.getUserByAuthHeader(validAuthHeader)).thenReturn(this.user);
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class VoteControllerTest {
 		//then
 		this.mockMvc.perform(
 				post("/dogs/1/vote/down")
-						.header("Authorization","Bearer "+ this.notValidToken)
+						.header("Authorization",this.notValidAuthHeader)
 		)
 				.andExpect(status().isUnauthorized());
 	}
@@ -59,7 +59,7 @@ public class VoteControllerTest {
 	public void shouldVoteUpCorrectly() throws Exception {
 		this.mockMvc.perform(
 				post("/dogs/1/vote/up")
-						.header("Authorization","Bearer "+ this.validToken)
+						.header("Authorization",this.validAuthHeader)
 		)
 				.andExpect(status().isOk());
 
@@ -71,7 +71,7 @@ public class VoteControllerTest {
 	public void shouldVoteDownCorrectly() throws Exception {
 		this.mockMvc.perform(
 				post("/dogs/2/vote/down")
-						.header("Authorization","Bearer "+ this.validToken)
+						.header("Authorization",this.validAuthHeader)
 		)
 				.andExpect(status().isOk());
 

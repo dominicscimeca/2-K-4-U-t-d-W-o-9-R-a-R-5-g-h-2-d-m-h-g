@@ -108,6 +108,22 @@ public class UserServiceTest {
 		assertThat(user).isEqualTo(this.user);
 	}
 
+	@Test
+	public void shouldGetUserByAuthHeader(){
+		//given
+		String authHeader = "valid-auth-header";
+		String email = "email@email.com";
+		when(this.fakeJWTProvider.getTokenFromHeader(authHeader)).thenReturn(token);
+		when(this.fakeJWTProvider.getEmail(token)).thenReturn(email);
+		when(this.fakeUserRepository.getUserByEmail(email)).thenReturn(user);
+
+		//when
+		User user = this.userService.getUserByAuthHeader(authHeader);
+
+		//then
+		assertThat(user).isEqualTo(this.user);
+	}
+
 	@Test(expected = UnauthorizedException.class)
 	public void shouldUseVoteServiceToVoteUpNotAuthorized() throws MalformedURLException {
 		//given

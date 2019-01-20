@@ -69,4 +69,17 @@ public class JWTProviderTest {
 		//then
 		assertThat(response).isEqualTo(email);
 	}
+
+	@Test
+	public void getTokenFromHeader(){
+		//given
+		String token = "valid-token";
+		String header = "Bearer "+token;
+
+		//when
+		String response = this.jwtProvider.getTokenFromHeader(header);
+
+		//then
+		assertThat(response).isEqualTo(token);
+	}
 }

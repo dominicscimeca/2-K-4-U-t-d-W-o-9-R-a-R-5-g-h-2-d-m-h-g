@@ -6,23 +6,18 @@ import com.disney.studios.user.exception.NotAValidEmailException;
 import com.disney.studios.user.exception.UserAlreadyRegisteredException;
 import com.disney.studios.user.exception.UserNotFoundException;
 import com.disney.studios.user.jwt.JWTProvider;
+import lombok.AllArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 @Service
+@AllArgsConstructor
 public class UserService {
-
-	@Autowired private final UserRepository userRepository;
-	@Autowired private final JWTProvider jwtProvider;
-
-	public UserService(UserRepository userRepository, JWTProvider jwtProvider) {
-		this.userRepository = userRepository;
-		this.jwtProvider = jwtProvider;
-	}
+	private final UserRepository userRepository;
+	private final JWTProvider jwtProvider;
 
 	public String register(String email, String password) {
 		String passwordHash = createPasswordHash(password);
@@ -85,5 +80,11 @@ public class UserService {
 
 		return user;
 
+	}
+
+	public User getUserByAuthHeader(String authHeader) {
+		String token = this.jwtProvider.getTokenFromHeader(authHeader);
+		String email = this.jwtProvider.getEmail(token);
+		return this.getUserByEmail(email);
 	}
 }
