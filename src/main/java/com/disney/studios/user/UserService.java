@@ -8,6 +8,8 @@ import com.disney.studios.user.exception.UserNotFoundException;
 import com.disney.studios.user.jwt.JWTProvider;
 import lombok.AllArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.AddressException;
@@ -16,6 +18,8 @@ import javax.mail.internet.InternetAddress;
 @Service
 @AllArgsConstructor
 public class UserService {
+	private final Logger log = LoggerFactory.getLogger(UserService.class);
+
 	private final UserRepository userRepository;
 	private final JWTProvider jwtProvider;
 
@@ -23,15 +27,21 @@ public class UserService {
 		String passwordHash = createPasswordHash(password);
 		User existingUser = this.userRepository.getUserByEmail(email);
 		if(!isValidEmailAddress(email)){
-			throw new NotAValidEmailException(String.format("Email provided is not a valid email. email='%s'",email));
+			String message = String.format("Registration Failed: Email provided is not a valid email. email='%s'", email);
+			log.warn(message);
+			throw new NotAValidEmailException(message);
 		}
 
 		if(null != existingUser){
-			throw new UserAlreadyRegisteredException(String.format("There is already a registered account under this email. email='%s'",email));
+			String message = String.format("Registration Failed: There is already a registered account under this email. email='%s'", email);
+			log.warn(message);
+			throw new UserAlreadyRegisteredException(message);
 		}
 
+		log.info("Creating a new user. email={}", email);
 		User newUser = this.userRepository.save(new User(email, passwordHash));
 
+		log.info("Creating a jwt for a new user. user={}", newUser);
 		return this.jwtProvider.constructJWT(newUser);
 	}
 
@@ -57,7 +67,9 @@ public class UserService {
 		if(null != user){
 			return this.jwtProvider.constructJWT(user);
 		}else{
-			throw new InvalidLoginException("Invalid login credentials. Please try again.");
+			String message = String.format("Invalid login credentials. Please try again. email='%s'", email);
+			log.warn(message);
+			throw new InvalidLoginException(message);
 		}
 	}
 
@@ -67,16 +79,21 @@ public class UserService {
 
 	public User getUserFromToken(String token) {
 		if(!this.jwtProvider.isValid(token)){
-			throw new UnauthorizedException("Invalid token. Please sign in again.");
+			String message = String.format("Invalid token. Please sign in again. token='%s'", token);
+			log.warn(message);
+			throw new UnauthorizedException(message);
 		}
 		String email = this.jwtProvider.getEmail(token);
 
 		User user = this.getUserByEmail(email);
 
 		if(null == user){
-			throw new UserNotFoundException(String.format("You have a valid token. But the underlying user has not been found. It was probably recently deleted. Please re-register. email-from-token='%s'",email));
+			String message = String.format("You have a valid token. But the underlying user has not been found. It was probably recently deleted. Please re-register. email-from-token='%s'", email);
+			log.warn(message);
+			throw new UserNotFoundException(message);
 		}
 
+		log.info("Returning User, obtained from token. email={}", email);
 		return user;
 
 	}

@@ -12,7 +12,7 @@
 1. [ ] Documentation
 1. [x] Error Handling
 1. [x] Authentication
-1. [ ] Logging 
+1. [x] Logging 
 1. [X] GMT
 1. [X] Swagger Documentation
 
