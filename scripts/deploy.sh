@@ -34,6 +34,6 @@ aws cloudformation ${upsertStack} \
         ParameterKey=Path,ParameterValue=* \
         ParameterKey=HealthCheckPath,ParameterValue=/actuator/health \
         ParameterKey=Priority,ParameterValue=1 \
-        ParameterKey=DesiredCount,ParameterValue=1
+        ParameterKey=DesiredCount,ParameterValue=2
 
 aws cloudformation wait ${waitCommand} --stack-name ${appName}

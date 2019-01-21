@@ -136,7 +136,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 6
+      HealthCheckIntervalSeconds: 60
       HealthCheckPath: !Ref 'HealthCheckPath'
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
