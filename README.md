@@ -1,9 +1,9 @@
 #Dominic Scimeca Disney Dog Image API
 would you insulate the app from a downstream API if it had one.
 
-##Seeing the app live
+##See a live demo
 
-`http://vpc-PublicL-3Z7KH9QE26C8-567865072.us-east-1.elb.amazonaws.com`
+`http://vpc-PublicL-3Z7KH9QE26C8-567865072.us-east-1.elb.amazonaws.com/swagger-ui.html`
 
 ##Running the app locally
 

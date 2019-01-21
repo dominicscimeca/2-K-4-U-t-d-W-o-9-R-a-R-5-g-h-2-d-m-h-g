@@ -9,7 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,7 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest({VoteController.class})
+@SpringBootTest
+@AutoConfigureMockMvc
 public class VoteControllerTest {
 
 	@Autowired
@@ -66,7 +68,7 @@ public class VoteControllerTest {
 						.header("Authorization",this.notValidAuthHeader)
 		)
 				.andExpect(status().isUnauthorized())
-				.andExpect(content().string("{\"timestamp\":\"2019-01-20T06:55:01Z\",\"status\":401,\"error\":\"UnauthorizedException\",\"message\":\"Unauthorized Exception Message\",\"path\":\"/dogs/1/vote/down\"}"));
+				.andExpect(content().string("{\"timestamp\":1547967301.000000000,\"status\":401,\"error\":\"UnauthorizedException\",\"message\":\"Unauthorized Exception Message\",\"path\":\"/dogs/1/vote/down\"}"));
 	}
 
 	@Test
